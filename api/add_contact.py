@@ -1,0 +1,556 @@
+from http.server import BaseHTTPRequestHandler
+import json
+import urllib.parse as urlparse
+from urllib.parse import parse_qs
+import base64
+import os
+
+# Import database module
+try:
+    from database import get_connection, return_connection
+except ImportError:
+    # For local testing
+    import sys
+    sys.path.append('..')
+    from database import get_connection, return_connection
+
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        # Check if this is an asset request
+        if self.path.startswith('/assets/'):
+            # This is a placeholder - in production, serve static files differently
+            self.serve_logo_placeholder()
+            return
+            
+        # Serve HTML form
+        html_content = """
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>STATUS VIEWS CENTRE - Contact Manager</title>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+            <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                
+                :root {
+                    --primary: #2c3e50;
+                    --secondary: #3498db;
+                    --accent: #e74c3c;
+                    --light: #ecf0f1;
+                    --dark: #2c3e50;
+                    --success: #27ae60;
+                    --warning: #f39c12;
+                }
+                
+                body {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+                    min-height: 100vh;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 20px;
+                    color: var(--dark);
+                }
+                
+                .container {
+                    background: white;
+                    border-radius: 20px;
+                    box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+                    padding: 40px;
+                    width: 100%;
+                    max-width: 550px;
+                    position: relative;
+                    overflow: hidden;
+                }
+                
+                .header {
+                    text-align: center;
+                    margin-bottom: 30px;
+                    position: relative;
+                }
+                
+                .logo-placeholder {
+                    width: 120px;
+                    height: 120px;
+                    margin: 0 auto 20px;
+                    background: linear-gradient(135deg, var(--secondary), var(--primary));
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                    font-size: 48px;
+                    box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+                }
+                
+                h1 {
+                    color: var(--primary);
+                    margin-bottom: 10px;
+                    font-size: 2.2em;
+                    font-weight: 700;
+                }
+                
+                .subtitle {
+                    color: #7f8c8d;
+                    font-size: 1.1em;
+                    line-height: 1.5;
+                    margin-bottom: 10px;
+                }
+                
+                .tagline {
+                    color: var(--secondary);
+                    font-weight: 600;
+                    font-size: 1.2em;
+                    margin-bottom: 30px;
+                }
+                
+                .form-container {
+                    background: var(--light);
+                    padding: 30px;
+                    border-radius: 15px;
+                    margin-bottom: 30px;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+                }
+                
+                .form-group {
+                    margin-bottom: 25px;
+                }
+                
+                label {
+                    display: block;
+                    margin-bottom: 8px;
+                    color: var(--primary);
+                    font-weight: 600;
+                    font-size: 1.1em;
+                }
+                
+                .input-with-icon {
+                    position: relative;
+                }
+                
+                .input-with-icon i {
+                    position: absolute;
+                    left: 15px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    color: var(--secondary);
+                    font-size: 18px;
+                }
+                
+                .input-with-icon input {
+                    width: 100%;
+                    padding: 15px 15px 15px 50px;
+                    border: 2px solid #dfe6e9;
+                    border-radius: 10px;
+                    font-size: 16px;
+                    transition: all 0.3s;
+                }
+                
+                .input-with-icon input:focus {
+                    outline: none;
+                    border-color: var(--secondary);
+                    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+                }
+                
+                button {
+                    width: 100%;
+                    padding: 17px;
+                    background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+                    color: white;
+                    border: none;
+                    border-radius: 10px;
+                    font-size: 18px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    margin-top: 10px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 10px;
+                }
+                
+                button:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+                }
+                
+                button:active {
+                    transform: translateY(-1px);
+                }
+                
+                .message {
+                    padding: 15px;
+                    border-radius: 10px;
+                    margin-bottom: 20px;
+                    text-align: center;
+                    font-weight: 500;
+                    display: none;
+                }
+                
+                .success {
+                    background-color: #d5f4e6;
+                    color: var(--success);
+                    border: 1px solid #b8e994;
+                    display: block;
+                }
+                
+                .error {
+                    background-color: #ffeaa7;
+                    color: var(--warning);
+                    border: 1px solid #fdcb6e;
+                    display: block;
+                }
+                
+                .admin-section {
+                    margin-top: 40px;
+                    padding: 30px;
+                    background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+                    border-radius: 15px;
+                    color: white;
+                }
+                
+                .admin-title {
+                    font-size: 1.4em;
+                    margin-bottom: 15px;
+                    text-align: center;
+                    color: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 10px;
+                }
+                
+                .admin-title i {
+                    color: var(--secondary);
+                }
+                
+                .download-btn {
+                    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+                }
+                
+                .download-btn:hover {
+                    box-shadow: 0 10px 25px rgba(231, 76, 60, 0.4);
+                }
+                
+                .password-input {
+                    margin-bottom: 25px;
+                }
+                
+                .stats {
+                    display: flex;
+                    justify-content: space-around;
+                    margin-top: 30px;
+                    padding-top: 20px;
+                    border-top: 1px solid #dfe6e9;
+                }
+                
+                .stat-item {
+                    text-align: center;
+                }
+                
+                .stat-number {
+                    font-size: 2em;
+                    font-weight: 700;
+                    color: var(--secondary);
+                    display: block;
+                }
+                
+                .stat-label {
+                    font-size: 0.9em;
+                    color: #7f8c8d;
+                }
+                
+                .footer {
+                    text-align: center;
+                    margin-top: 30px;
+                    color: #7f8c8d;
+                    font-size: 0.9em;
+                }
+                
+                .pulse {
+                    animation: pulse 2s infinite;
+                }
+                
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                    100% { transform: scale(1); }
+                }
+                
+                @media (max-width: 600px) {
+                    .container {
+                        padding: 25px;
+                    }
+                    
+                    .form-container, .admin-section {
+                        padding: 20px;
+                    }
+                    
+                    h1 {
+                        font-size: 1.8em;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <div class="logo-placeholder">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h1>STATUS VIEWS CENTRE</h1>
+                    <div class="tagline">Contact Management System</div>
+                    <p class="subtitle">Add your contacts below to generate VCF file for easy sharing</p>
+                </div>
+                
+                <div id="message" class="message"></div>
+                
+                <div class="form-container">
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name"><i class="fas fa-user"></i> Full Name:</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-user-circle"></i>
+                                <input type="text" id="name" name="name" placeholder="Enter full name (e.g., Uthuman)" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone"><i class="fas fa-phone"></i> Phone Number:</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                                <input type="tel" id="phone" name="phone" placeholder="Enter phone number (e.g., +256784670936)" required>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="pulse">
+                            <i class="fas fa-plus-circle"></i> Add Contact
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="contactCount">0</span>
+                        <span class="stat-label">Contacts</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="todayCount">0</span>
+                        <span class="stat-label">Today</span>
+                    </div>
+                </div>
+                
+                <div class="admin-section">
+                    <h3 class="admin-title">
+                        <i class="fas fa-lock"></i> Admin Access
+                    </h3>
+                    <div class="form-group password-input">
+                        <div class="input-with-icon">
+                            <i class="fas fa-key"></i>
+                            <input type="password" id="password" name="password" placeholder="Enter admin password">
+                        </div>
+                    </div>
+                    <button class="download-btn" onclick="downloadVCF()">
+                        <i class="fas fa-download"></i> Download VCF File
+                    </button>
+                </div>
+                
+                <div class="footer">
+                    <p>© 2026 STATUS VIEWS CENTRE. All rights reserved.</p>
+                    <p>VCF Contact Management System v1.0</p>
+                </div>
+            </div>
+            
+            <script>
+                // Load contact statistics
+                async function loadStats() {
+                    try {
+                        const response = await fetch('/contacts');
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            document.getElementById('contactCount').textContent = data.count;
+                            
+                            // Calculate today's contacts
+                            const today = new Date().toISOString().split('T')[0];
+                            const todayCount = data.contacts.filter(contact => 
+                                contact.created_at && contact.created_at.startsWith(today)
+                            ).length;
+                            document.getElementById('todayCount').textContent = todayCount;
+                        }
+                    } catch (error) {
+                        console.error('Error loading stats:', error);
+                    }
+                }
+                
+                document.getElementById('contactForm').addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const name = document.getElementById('name').value.trim();
+                    const phone = document.getElementById('phone').value.trim();
+                    
+                    if (!name || !phone) {
+                        showMessage('Please fill in all fields', 'error');
+                        return;
+                    }
+                    
+                    try {
+                        const response = await fetch('/add', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ name, phone })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (response.ok) {
+                            showMessage(result.message || '✓ Contact added successfully!', 'success');
+                            document.getElementById('contactForm').reset();
+                            loadStats(); // Refresh stats
+                        } else {
+                            showMessage(result.error || '✗ Error adding contact', 'error');
+                        }
+                        
+                    } catch (error) {
+                        console.error('Error:', error);
+                        showMessage('✗ Network error. Please try again.', 'error');
+                    }
+                });
+                
+                async function downloadVCF() {
+                    const password = document.getElementById('password').value;
+                    
+                    if (password !== '1542') {
+                        showMessage('✗ Incorrect password!', 'error');
+                        return;
+                    }
+                    
+                    try {
+                        const response = await fetch(`/download?password=${password}`);
+                        
+                        if (response.ok) {
+                            const blob = await response.blob();
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `status_views_contacts_${new Date().toISOString().split('T')[0]}.vcf`;
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                            document.body.removeChild(a);
+                            showMessage('✓ VCF file downloaded successfully!', 'success');
+                        } else {
+                            const error = await response.json();
+                            showMessage(`✗ ${error.error || 'Download failed'}`, 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        showMessage('✗ Download failed. Please try again.', 'error');
+                    }
+                }
+                
+                function showMessage(text, type) {
+                    const messageDiv = document.getElementById('message');
+                    messageDiv.textContent = text;
+                    messageDiv.className = `message ${type}`;
+                    
+                    // Clear message after 5 seconds
+                    setTimeout(() => {
+                        messageDiv.className = 'message';
+                        messageDiv.textContent = '';
+                    }, 5000);
+                }
+                
+                // Load stats on page load
+                document.addEventListener('DOMContentLoaded', loadStats);
+                
+                // Add enter key support for password field
+                document.getElementById('password').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        downloadVCF();
+                    }
+                });
+            </script>
+        </body>
+        </html>
+        """
+        
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+        self.wfile.write(html_content.encode('utf-8'))
+        return
+    
+    def serve_logo_placeholder(self):
+        # Serve a placeholder logo or redirect
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+        self.wfile.write(b'Logo placeholder - upload your logo to /assets/logo.png')
+        return
+    
+    def do_POST(self):
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(content_length)
+        data = json.loads(post_data.decode('utf-8'))
+        
+        name = data.get('name', '').strip()
+        phone = data.get('phone', '').strip()
+        
+        if not name or not phone:
+            self.send_response(400)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({'error': 'Name and phone are required'}).encode('utf-8'))
+            return
+        
+        conn = get_connection()
+        if conn:
+            try:
+                cur = conn.cursor()
+                cur.execute(
+                    "INSERT INTO contacts (name, phone) VALUES (%s, %s) RETURNING id",
+                    (name, phone)
+                )
+                contact_id = cur.fetchone()[0]
+                conn.commit()
+                cur.close()
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    'success': True,
+                    'message': f'Contact "{name}" added successfully!',
+                    'contact_id': contact_id,
+                    'contact': {'name': name, 'phone': phone}
+                }).encode('utf-8'))
+                
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    'success': False,
+                    'error': f'Database error: {str(e)}'
+                }).encode('utf-8'))
+            finally:
+                return_connection(conn)
+        else:
+            self.send_response(500)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                'success': False,
+                'error': 'Database connection failed'
+            }).encode('utf-8'))
