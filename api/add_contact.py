@@ -1,3 +1,4 @@
+# api/add_contact.py
 from http.server import BaseHTTPRequestHandler
 import json
 import urllib.parse as urlparse
@@ -38,7 +39,7 @@ class handler(BaseHTTPRequestHandler):
                     self.wfile.write(b'Logo not found. Upload assets/logo.png')
                     return
 
-        # Serve main public HTML (kept concise here — full HTML similar to before)
+        # Serve main public HTML (dark / black theme)
         html_content = """
         <!DOCTYPE html>
         <html lang="en">
@@ -48,25 +49,65 @@ class handler(BaseHTTPRequestHandler):
             <title>STATUS VIEWS CENTRE - Contact Manager</title>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
             <style>
-                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg,#2c3e50 0%,#3498db 100%); min-height:100vh; padding:20px; color:#2c3e50; display:flex; justify-content:center; align-items:center;}
-                .container { background:white; border-radius:20px; padding:30px; width:100%; max-width:720px; box-shadow:0 20px 40px rgba(0,0,0,0.2);}
-                .header { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:20px;}
-                .logo { display:flex; align-items:center; gap:12px;}
-                .logo img { width:56px; height:56px; border-radius:8px; object-fit:cover; }
-                h1 { font-size:1.4rem; margin:0; color:#2c3e50;}
-                .admin-btn { background:#2c3e50; color:white; padding:8px 12px; border-radius:8px; border:none; cursor:pointer; }
-                .form-container { background:#f3f6f8; padding:18px; border-radius:12px; margin-bottom:18px;}
-                .input { width:100%; padding:12px; border-radius:8px; border:1px solid #e0e6ea; margin-bottom:12px; }
-                .btn-primary { background:linear-gradient(135deg,#3498db,#2c3e50); color:white; padding:12px; border-radius:10px; border:none; width:100%; cursor:pointer; font-weight:600;}
-                .join-btn { display:flex; align-items:center; gap:10px; background:#fff; border:1px solid #e0e6ea; padding:10px; border-radius:10px; text-decoration:none; color:#2c3e50; width:100%; }
-                .join-btn img { width:36px; height:36px; border-radius:6px; }
-                .note { font-size:0.95rem; color:#7f8c8d; margin-top:8px;}
-                .stats { display:flex; gap:8px; justify-content:space-between; margin-top:14px; padding-top:10px; border-top:1px solid #e6eef5;}
+                /* Dark / black theme */
+                :root{
+                    --bg: #070707;
+                    --card: #0f1111;
+                    --muted: #b9b9bd;
+                    --accent: #f0c000; /* gold accent */
+                    --accent-2: #ff6b6b; /* red for danger */
+                    --primary: #ffffff;
+                    --input-bg: #111315;
+                    --border: #222425;
+                    --success: #26a69a;
+                }
+                html,body{height:100%}
+                body {
+                    margin: 0;
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    background: linear-gradient(180deg, #000 0%, #070707 100%);
+                    color: var(--primary);
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    padding:20px;
+                }
+                .container {
+                    width:100%;
+                    max-width:760px;
+                    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+                    border-radius:12px;
+                    box-shadow: 0 12px 40px rgba(0,0,0,0.8);
+                    padding:20px;
+                    border: 1px solid rgba(255,255,255,0.03);
+                }
+                .header { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:16px; }
+                .logo { display:flex; align-items:center; gap:12px; }
+                .logo img { width:56px; height:56px; border-radius:8px; object-fit:cover; border:1px solid rgba(255,255,255,0.04); background:linear-gradient(180deg,#0b0b0b,#141414); }
+                h1 { margin:0; font-size:1.25rem; color:var(--primary); letter-spacing:0.3px; }
+                .subtitle { color:var(--muted); font-size:0.9rem; margin-top:2px; }
+
+                .admin-btn { background:transparent; color:var(--primary); padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); cursor:pointer; font-weight:600; }
+                .form-container { background:var(--card); border-radius:10px; padding:18px; margin-bottom:16px; border:1px solid var(--border); }
+                .input { width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); margin-bottom:12px; background:var(--input-bg); color:var(--primary); }
+                .input::placeholder { color: rgba(255,255,255,0.35); }
+                .btn-primary { background: linear-gradient(90deg, var(--accent), #ffb84d); color:#0b0b0b; padding:12px; border-radius:10px; border:none; width:100%; cursor:pointer; font-weight:700; box-shadow: 0 6px 18px rgba(240,192,0,0.12); }
+                .btn-primary:active{ transform: translateY(1px); }
+                .join-btn { display:flex; align-items:center; gap:12px; background:transparent; border:1px solid rgba(255,255,255,0.03); padding:10px; border-radius:10px; text-decoration:none; color:var(--primary); width:100%; margin-top:10px; }
+                .join-btn img { width:40px; height:40px; border-radius:8px; object-fit:cover; }
+                .note { font-size:0.95rem; color:var(--muted); margin-top:8px; }
+                .stats { display:flex; gap:8px; justify-content:space-between; margin-top:14px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.02); }
                 .stat { text-align:center; flex:1; }
-                .stat .num { font-size:1.4rem; color:#3498db; font-weight:700; }
+                .stat .num { font-size:1.4rem; color:var(--accent); font-weight:800; }
                 .message { padding:10px; border-radius:8px; display:none; margin-bottom:10px; }
-                .message.success { background:#d5f4e6; color:#27ae60; display:block; }
-                .message.error { background:#ffeaa7; color:#f39c12; display:block; }
+                .message.success { background: rgba(38,166,154,0.08); color: var(--success); display:block; }
+                .message.error { background: rgba(255,107,107,0.08); color: var(--accent-2); display:block; }
+
+                footer { text-align:center; color:var(--muted); font-size:0.85rem; margin-top:12px; }
+
+                @media (max-width:720px){
+                    .container{ padding:14px }
+                }
             </style>
         </head>
         <body>
@@ -76,7 +117,7 @@ class handler(BaseHTTPRequestHandler):
                         <img src="/assets/logo.png" alt="logo" />
                         <div>
                             <h1>STATUS VIEWS CENTRE</h1>
-                            <div style="font-size:0.9rem;color:#7f8c8d;">VCF Contact Management System</div>
+                            <div class="subtitle">VCF Contact Management System</div>
                         </div>
                     </div>
                     <div>
@@ -96,8 +137,8 @@ class handler(BaseHTTPRequestHandler):
                     <a class="join-btn" id="joinGroup" href="https://chat.whatsapp.com/FQMf4pL5ezr5QlMKMANEqa" target="_blank" rel="noopener">
                         <img src="/assets/logo.png" alt="group" />
                         <div>
-                            <div style="font-weight:600">Join WhatsApp Group</div>
-                            <div style="font-size:0.85rem;color:#7f8c8d">Tap to join the group — VCF will be dropped in the group</div>
+                            <div style="font-weight:700">Join WhatsApp Group</div>
+                            <div style="font-size:0.85rem;color:var(--muted)">Tap to join — VCF will be dropped in this group</div>
                         </div>
                     </a>
                     <div class="note">Only Ugandan numbers allowed (must start with <strong>256</strong>). Example: <code>256784670936</code></div>
@@ -117,13 +158,14 @@ class handler(BaseHTTPRequestHandler):
                         <div>Remaining to 1000</div>
                     </div>
                 </div>
+
+                <footer>© 2026 STATUS VIEWS CENTRE. All rights reserved.</footer>
             </div>
 
             <script>
                 const GOAL = 1000;
 
                 document.getElementById('adminPanelBtn').addEventListener('click', function(){
-                    // go to the dedicated admin panel
                     window.location.href = '/admin_panel';
                 });
 
