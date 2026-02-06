@@ -4,6 +4,7 @@ import urllib.parse as urlparse
 from urllib.parse import parse_qs
 import base64
 import os
+import re
 
 # Import database module
 try:
@@ -65,9 +66,19 @@ class handler(BaseHTTPRequestHandler):
                     box-shadow: 0 25px 50px rgba(0,0,0,0.25);
                     padding: 40px;
                     width: 100%;
-                    max-width: 550px;
+                    max-width: 750px;
                     position: relative;
                     overflow: hidden;
+                    display: flex;
+                    gap: 20px;
+                }
+
+                .left {
+                    flex: 1.2;
+                }
+                
+                .right {
+                    width: 320px;
                 }
                 
                 .header {
@@ -210,16 +221,16 @@ class handler(BaseHTTPRequestHandler):
                 }
                 
                 .admin-section {
-                    margin-top: 40px;
-                    padding: 30px;
+                    margin-top: 20px;
+                    padding: 20px;
                     background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
-                    border-radius: 15px;
+                    border-radius: 12px;
                     color: white;
                 }
                 
                 .admin-title {
-                    font-size: 1.4em;
-                    margin-bottom: 15px;
+                    font-size: 1.1em;
+                    margin-bottom: 10px;
                     text-align: center;
                     color: white;
                     display: flex;
@@ -241,23 +252,25 @@ class handler(BaseHTTPRequestHandler):
                 }
                 
                 .password-input {
-                    margin-bottom: 25px;
+                    margin-bottom: 15px;
                 }
                 
                 .stats {
                     display: flex;
-                    justify-content: space-around;
-                    margin-top: 30px;
-                    padding-top: 20px;
+                    justify-content: space-between;
+                    gap: 8px;
+                    margin-top: 20px;
+                    padding-top: 10px;
                     border-top: 1px solid #dfe6e9;
                 }
                 
                 .stat-item {
                     text-align: center;
+                    flex: 1;
                 }
                 
                 .stat-number {
-                    font-size: 2em;
+                    font-size: 1.6em;
                     font-weight: 700;
                     color: var(--secondary);
                     display: block;
@@ -270,7 +283,7 @@ class handler(BaseHTTPRequestHandler):
                 
                 .footer {
                     text-align: center;
-                    margin-top: 30px;
+                    margin-top: 20px;
                     color: #7f8c8d;
                     font-size: 0.9em;
                 }
@@ -285,91 +298,122 @@ class handler(BaseHTTPRequestHandler):
                     100% { transform: scale(1); }
                 }
                 
-                @media (max-width: 600px) {
+                @media (max-width: 900px) {
                     .container {
-                        padding: 25px;
-                    }
-                    
-                    .form-container, .admin-section {
                         padding: 20px;
+                        flex-direction: column;
                     }
                     
-                    h1 {
-                        font-size: 1.8em;
+                    .right {
+                        width: 100%;
                     }
                 }
             </style>
         </head>
         <body>
             <div class="container">
-                <div class="header">
-                    <div class="logo-placeholder">
-                        <i class="fas fa-eye"></i>
+                <div class="left">
+                    <div class="header">
+                        <div class="logo-placeholder">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h1>STATUS VIEWS CENTRE</h1>
+                        <div class="tagline">Contact Management System</div>
+                        <p class="subtitle">Add your contacts below to generate VCF file for easy sharing</p>
                     </div>
-                    <h1>STATUS VIEWS CENTRE</h1>
-                    <div class="tagline">Contact Management System</div>
-                    <p class="subtitle">Add your contacts below to generate VCF file for easy sharing</p>
+                    
+                    <div id="message" class="message"></div>
+                    
+                    <div class="form-container">
+                        <form id="contactForm">
+                            <div class="form-group">
+                                <label for="name"><i class="fas fa-user"></i> Full Name:</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-user-circle"></i>
+                                    <input type="text" id="name" name="name" placeholder="Enter full name (e.g., Uthuman)" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone"><i class="fas fa-phone"></i> Phone Number:</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-mobile-alt"></i>
+                                    <input type="tel" id="phone" name="phone" placeholder="Enter phone number (e.g., 256784670936)" required>
+                                </div>
+                                <small style="color:#7f8c8d;display:block;margin-top:8px;">
+                                    Only Ugandan numbers allowed (must start with <strong>256</strong>). Example: <code>256784670936</code>
+                                </small>
+                            </div>
+                            
+                            <button type="submit" class="pulse">
+                                <i class="fas fa-plus-circle"></i> Add Contact
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="stats">
+                        <div class="stat-item">
+                            <span class="stat-number" id="contactCount">0</span>
+                            <span class="stat-label">Contacts</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="todayCount">0</span>
+                            <span class="stat-label">Today</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="remainingCount">1000</span>
+                            <span class="stat-label">Remaining to 1000</span>
+                        </div>
+                    </div>
+
+                    <div class="footer">
+                        <p>© 2026 STATUS VIEWS CENTRE. All rights reserved.</p>
+                        <p>VCF Contact Management System v1.0</p>
+                    </div>
                 </div>
-                
-                <div id="message" class="message"></div>
-                
-                <div class="form-container">
-                    <form id="contactForm">
-                        <div class="form-group">
-                            <label for="name"><i class="fas fa-user"></i> Full Name:</label>
+
+                <div class="right">
+                    <div class="admin-section">
+                        <h3 class="admin-title">
+                            <i class="fas fa-lock"></i> Admin Access
+                        </h3>
+                        <div class="form-group password-input">
                             <div class="input-with-icon">
-                                <i class="fas fa-user-circle"></i>
-                                <input type="text" id="name" name="name" placeholder="Enter full name (e.g., Uthuman)" required>
+                                <i class="fas fa-key"></i>
+                                <input type="password" id="password" name="password" placeholder="Enter admin password">
                             </div>
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="phone"><i class="fas fa-phone"></i> Phone Number:</label>
-                            <div class="input-with-icon">
-                                <i class="fas fa-mobile-alt"></i>
-                                <input type="tel" id="phone" name="phone" placeholder="Enter phone number (e.g., +256784670936)" required>
-                            </div>
+
+                        <div style="margin-bottom:10px;">
+                            <label style="color:#fff; font-weight:600;">WhatsApp group (required to download VCF)</label>
+                            <p style="color:#fff; font-size:0.9em;">
+                                Please join: <a href="https://chat.whatsapp.com/FQMf4pL5ezr5QlMKMANEqa" target="_blank" style="color:#ffd;">Join WhatsApp Group</a>
+                            </p>
+                            <label style="display:flex;gap:8px;align-items:center;color:#fff;">
+                                <input type="checkbox" id="joinedWhatsapp" /> I have joined the WhatsApp group
+                            </label>
                         </div>
-                        
-                        <button type="submit" class="pulse">
-                            <i class="fas fa-plus-circle"></i> Add Contact
+
+                        <button class="download-btn" onclick="downloadVCF()">
+                            <i class="fas fa-download"></i> Download VCF File
                         </button>
-                    </form>
-                </div>
-                
-                <div class="stats">
-                    <div class="stat-item">
-                        <span class="stat-number" id="contactCount">0</span>
-                        <span class="stat-label">Contacts</span>
+
+                        <hr style="margin:15px 0;border-color:rgba(255,255,255,0.1)" />
+
+                        <button style="background:#c0392b;margin-bottom:8px;" onclick="adminReset()">
+                            <i class="fas fa-trash-alt"></i> Reset / Delete All Contacts
+                        </button>
+
+                        <small style="display:block;color:#ffd;margin-top:8px;">
+                            Reset will permanently delete all contacts and reset IDs. Admin password required.
+                        </small>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-number" id="todayCount">0</span>
-                        <span class="stat-label">Today</span>
-                    </div>
-                </div>
-                
-                <div class="admin-section">
-                    <h3 class="admin-title">
-                        <i class="fas fa-lock"></i> Admin Access
-                    </h3>
-                    <div class="form-group password-input">
-                        <div class="input-with-icon">
-                            <i class="fas fa-key"></i>
-                            <input type="password" id="password" name="password" placeholder="Enter admin password">
-                        </div>
-                    </div>
-                    <button class="download-btn" onclick="downloadVCF()">
-                        <i class="fas fa-download"></i> Download VCF File
-                    </button>
-                </div>
-                
-                <div class="footer">
-                    <p>© 2026 STATUS VIEWS CENTRE. All rights reserved.</p>
-                    <p>VCF Contact Management System v1.0</p>
                 </div>
             </div>
             
             <script>
+                const GOAL = 1000;
+
                 // Load contact statistics
                 async function loadStats() {
                     try {
@@ -385,6 +429,9 @@ class handler(BaseHTTPRequestHandler):
                                 contact.created_at && contact.created_at.startsWith(today)
                             ).length;
                             document.getElementById('todayCount').textContent = todayCount;
+
+                            const remaining = Math.max(GOAL - data.count, 0);
+                            document.getElementById('remainingCount').textContent = remaining;
                         }
                     } catch (error) {
                         console.error('Error loading stats:', error);
@@ -395,10 +442,19 @@ class handler(BaseHTTPRequestHandler):
                     e.preventDefault();
                     
                     const name = document.getElementById('name').value.trim();
-                    const phone = document.getElementById('phone').value.trim();
+                    const phoneRaw = document.getElementById('phone').value.trim();
                     
-                    if (!name || !phone) {
+                    if (!name || !phoneRaw) {
                         showMessage('Please fill in all fields', 'error');
+                        return;
+                    }
+
+                    // Normalize phone: remove non-digits
+                    const phone = phoneRaw.replace(/\\D/g, '');
+                    
+                    // Validate Ugandan phone (must start with 256)
+                    if (!phone.startsWith('256')) {
+                        showMessage('Only Ugandan numbers are allowed. The number must start with 256.', 'error');
                         return;
                     }
                     
@@ -418,7 +474,7 @@ class handler(BaseHTTPRequestHandler):
                             document.getElementById('contactForm').reset();
                             loadStats(); // Refresh stats
                         } else {
-                            showMessage(result.error || '✗ Error adding contact', 'error');
+                            showMessage(result.error || (result.message) || '✗ Error adding contact', 'error');
                         }
                         
                     } catch (error) {
@@ -429,14 +485,20 @@ class handler(BaseHTTPRequestHandler):
                 
                 async function downloadVCF() {
                     const password = document.getElementById('password').value;
+                    const joined = document.getElementById('joinedWhatsapp').checked;
                     
-                    if (password !== '1542') {
-                        showMessage('✗ Incorrect password!', 'error');
+                    if (!joined) {
+                        showMessage('You must join the WhatsApp group before downloading the VCF.', 'error');
+                        return;
+                    }
+
+                    if (!password) {
+                        showMessage('Admin password required to download VCF', 'error');
                         return;
                     }
                     
                     try {
-                        const response = await fetch(`/download?password=${password}`);
+                        const response = await fetch(`/download?password=${encodeURIComponent(password)}`);
                         
                         if (response.ok) {
                             const blob = await response.blob();
@@ -458,17 +520,48 @@ class handler(BaseHTTPRequestHandler):
                         showMessage('✗ Download failed. Please try again.', 'error');
                     }
                 }
+
+                async function adminReset() {
+                    const password = document.getElementById('password').value;
+                    if (!password) {
+                        showMessage('Admin password required to reset', 'error');
+                        return;
+                    }
+
+                    if (!confirm('This will permanently delete ALL contacts and reset IDs. Are you sure?')) {
+                        return;
+                    }
+
+                    try {
+                        const res = await fetch('/admin/reset', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ password })
+                        });
+
+                        const json = await res.json();
+                        if (res.ok) {
+                            showMessage(json.message || 'All contacts deleted and reset', 'success');
+                            loadStats();
+                        } else {
+                            showMessage(json.error || 'Reset failed', 'error');
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        showMessage('Network error during reset', 'error');
+                    }
+                }
                 
                 function showMessage(text, type) {
                     const messageDiv = document.getElementById('message');
                     messageDiv.textContent = text;
                     messageDiv.className = `message ${type}`;
                     
-                    // Clear message after 5 seconds
+                    // Clear message after 6 seconds
                     setTimeout(() => {
                         messageDiv.className = 'message';
                         messageDiv.textContent = '';
-                    }, 5000);
+                    }, 6000);
                 }
                 
                 // Load stats on page load
@@ -500,12 +593,20 @@ class handler(BaseHTTPRequestHandler):
         return
     
     def do_POST(self):
-        content_length = int(self.headers['Content-Length'])
+        content_length = int(self.headers.get('Content-Length', 0))
         post_data = self.rfile.read(content_length)
-        data = json.loads(post_data.decode('utf-8'))
+        try:
+            data = json.loads(post_data.decode('utf-8'))
+        except Exception:
+            self.send_response(400)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({'error': 'Invalid JSON'}).encode('utf-8'))
+            return
         
-        name = data.get('name', '').strip()
-        phone = data.get('phone', '').strip()
+        name = (data.get('name', '') or '').strip()
+        phone_raw = (data.get('phone', '') or '').strip()
+        phone = re.sub(r'\\D', '', phone_raw)  # digits only
         
         if not name or not phone:
             self.send_response(400)
@@ -513,11 +614,35 @@ class handler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps({'error': 'Name and phone are required'}).encode('utf-8'))
             return
+
+        # Enforce Ugandan phone numbers (must start with 256)
+        if not phone.startswith('256'):
+            self.send_response(400)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({'error': 'Only Ugandan numbers are allowed (must start with 256)'}).encode('utf-8'))
+            return
         
         conn = get_connection()
         if conn:
             try:
                 cur = conn.cursor()
+                # Check duplicates by phone or name (case-insensitive)
+                cur.execute("SELECT id, name FROM contacts WHERE phone = %s OR LOWER(name) = LOWER(%s)", (phone, name))
+                existing = cur.fetchone()
+                if existing:
+                    self.send_response(409)
+                    self.send_header('Content-type', 'application/json')
+                    self.end_headers()
+                    msg = 'Duplicate contact: '
+                    if existing[1] and existing[1].lower() == name.lower():
+                        msg += 'A contact with this name already exists.'
+                    else:
+                        msg += 'A contact with this phone already exists.'
+                    self.wfile.write(json.dumps({'error': msg}).encode('utf-8'))
+                    cur.close()
+                    return
+
                 cur.execute(
                     "INSERT INTO contacts (name, phone) VALUES (%s, %s) RETURNING id",
                     (name, phone)
@@ -531,19 +656,27 @@ class handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(json.dumps({
                     'success': True,
-                    'message': f'Contact "{name}" added successfully!',
+                    'message': f'Contact \"{name}\" added successfully!',
                     'contact_id': contact_id,
                     'contact': {'name': name, 'phone': phone}
                 }).encode('utf-8'))
                 
             except Exception as e:
-                self.send_response(500)
-                self.send_header('Content-type', 'application/json')
-                self.end_headers()
-                self.wfile.write(json.dumps({
-                    'success': False,
-                    'error': f'Database error: {str(e)}'
-                }).encode('utf-8'))
+                # If unique index causes error (race), translate to duplicate
+                errstr = str(e)
+                if 'uq_contacts_phone' in errstr or 'uq_contacts_name_lower' in errstr or 'duplicate key' in errstr.lower():
+                    self.send_response(409)
+                    self.send_header('Content-type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({'error': 'Duplicate contact (phone or name)'}).encode('utf-8'))
+                else:
+                    self.send_response(500)
+                    self.send_header('Content-type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        'success': False,
+                        'error': f'Database error: {str(e)}'
+                    }).encode('utf-8'))
             finally:
                 return_connection(conn)
         else:
