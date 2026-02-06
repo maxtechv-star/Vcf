@@ -1,39 +1,42 @@
 from http.server import BaseHTTPRequestHandler
 import json
+import base64
 
 try:
     from database import get_connection, return_connection
+    from config import ADMIN_USERNAME, ADMIN_PASSWORD
 except ImportError:
     import sys
     sys.path.append('..')
     from database import get_connection, return_connection
+    from config import ADMIN_USERNAME, ADMIN_PASSWORD
+
+def check_basic_auth(headers):
+    auth = headers.get('Authorization', '')
+    if not auth or not auth.startswith('Basic '):
+        return False
+    try:
+        token = auth.split(' ', 1)[1]
+        decoded = base64.b64decode(token).decode('utf-8')
+        user, pwd = decoded.split(':', 1)
+        return user == ADMIN_USERNAME and pwd == ADMIN_PASSWORD
+    except Exception:
+        return False
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
-        content_length = int(self.headers.get('Content-Length', 0))
-        post_data = self.rfile.read(content_length)
-        try:
-            data = json.loads(post_data.decode('utf-8'))
-        except Exception:
-            self.send_response(400)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            self.wfile.write(json.dumps({'error': 'Invalid JSON'}).encode('utf-8'))
-            return
-
-        password = data.get('password', '')
-        if password != '1542':
+        # Only admin allowed
+        if not check_basic_auth(self.headers):
             self.send_response(401)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
-            self.wfile.write(json.dumps({'error': 'Unauthorized: Invalid password'}).encode('utf-8'))
+            self.wfile.write(json.dumps({'error': 'Unauthorized: admin credentials required'}).encode('utf-8'))
             return
 
         conn = get_connection()
         if conn:
             try:
                 cur = conn.cursor()
-                # Truncate contacts and restart identity (resets serial IDs)
                 cur.execute("TRUNCATE TABLE contacts RESTART IDENTITY CASCADE")
                 conn.commit()
                 cur.close()
