@@ -6,33 +6,14 @@
     }
   ],
   "routes": [
-    {
-      "src": "/",
-      "dest": "/api/add_contact.py"
-    },
-    {
-      "src": "/add",
-      "dest": "/api/add_contact.py"
-    },
-    {
-      "src": "/download",
-      "dest": "/api/download_vcf.py"
-    },
-    {
-      "src": "/contacts",
-      "dest": "/api/get_contacts.py"
-    },
-    {
-      "src": "/assets/(.*)",
-      "dest": "/api/add_contact.py"
-    },
-    {
-      "src": "/admin/reset",
-      "dest": "/api/admin_reset.py"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/api/add_contact.py"
-    }
+    { "src": "/", "dest": "/api/add_contact.py" },
+    { "src": "/add", "dest": "/api/add_contact.py" },
+    { "src": "/download", "dest": "/api/download_vcf.py" },
+    { "src": "/contacts", "dest": "/api/get_contacts.py" },
+    { "src": "/assets/(.*)", "dest": "/api/add_contact.py" },
+    { "src": "/admin_panel", "dest": "/api/admin_panel.py" },
+    { "src": "/admin/login", "dest": "/api/admin_login.py" },
+    { "src": "/admin/reset", "dest": "/api/admin_reset.py" },
+    { "src": "/(.*)", "dest": "/api/add_contact.py" }
   ]
 }
