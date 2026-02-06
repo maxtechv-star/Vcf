@@ -141,7 +141,7 @@ class handler(BaseHTTPRequestHandler):
                             <div style="font-size:0.85rem;color:var(--muted)">Tap to join — VCF will be dropped in this group</div>
                         </div>
                     </a>
-                    <div class="note">Only Ugandan numbers allowed (must start with <strong>256</strong>). Example: <code>256784670936</code></div>
+                    <div class="note">Only Ugandan numbers allowed Example: <code>256784670936</code></div>
                 </div>
 
                 <div class="stats">
@@ -189,7 +189,7 @@ class handler(BaseHTTPRequestHandler):
                     const phoneRaw = document.getElementById('phone').value.trim();
                     if (!name || !phoneRaw){ showMessage('Fill all fields', 'error'); return; }
                     const phone = phoneRaw.replace(/\\D/g, '');
-                    if (!phone.startsWith('256')){ showMessage('Only Ugandan numbers allowed (start with 256).', 'error'); return; }
+                    if (!phone.startsWith('256')){ showMessage('Only Ugandan numbers allowed.', 'error'); return; }
                     try{
                         const res = await fetch('/add', {
                             method: 'POST',
@@ -247,7 +247,7 @@ class handler(BaseHTTPRequestHandler):
             self.send_response(400)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
-            self.wfile.write(json.dumps({'error': 'Only Ugandan numbers are allowed (must start with 256)'}).encode('utf-8'))
+            self.wfile.write(json.dumps({'error': 'Only Ugandan numbers are allowed'}).encode('utf-8'))
             return
 
         conn = get_connection()

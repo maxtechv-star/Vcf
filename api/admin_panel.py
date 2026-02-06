@@ -76,7 +76,7 @@ class handler(BaseHTTPRequestHandler):
               </div>
             </a>
 
-            <div class="note">For security set ADMIN_PASSWORD via environment variables in production. Logout removes local token only.</div>
+            <div class="note">For security.</div>
           </div>
 
           <script>
