@@ -1,6 +1,7 @@
 from http.server import BaseHTTPRequestHandler
 import json
 import base64
+import os
 
 try:
     from database import get_connection, return_connection
@@ -9,7 +10,8 @@ except ImportError:
     import sys
     sys.path.append('..')
     from database import get_connection, return_connection
-    from config import ADMIN_USERNAME, ADMIN_PASSWORD
+    ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
+    ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', '1542')
 
 def check_basic_auth(headers):
     auth = headers.get('Authorization', '')
@@ -25,7 +27,7 @@ def check_basic_auth(headers):
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
-        # Only admin allowed
+        # Only admin
         if not check_basic_auth(self.headers):
             self.send_response(401)
             self.send_header('Content-type', 'application/json')
