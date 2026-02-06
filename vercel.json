@@ -27,6 +27,10 @@
       "dest": "/api/add_contact.py"
     },
     {
+      "src": "/admin/reset",
+      "dest": "/api/admin_reset.py"
+    },
+    {
       "src": "/(.*)",
       "dest": "/api/add_contact.py"
     }

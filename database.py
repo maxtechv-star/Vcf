@@ -39,10 +39,22 @@ def init_db():
                 )
             """)
             
-            # Create index
+            # Create index on created_at
             cur.execute("""
                 CREATE INDEX IF NOT EXISTS idx_contacts_created_at 
                 ON contacts(created_at)
+            """)
+            
+            # Ensure phone is unique
+            cur.execute("""
+                CREATE UNIQUE INDEX IF NOT EXISTS uq_contacts_phone
+                ON contacts(phone)
+            """)
+            
+            # Ensure name is unique case-insensitively
+            cur.execute("""
+                CREATE UNIQUE INDEX IF NOT EXISTS uq_contacts_name_lower
+                ON contacts(LOWER(name))
             """)
             
             conn.commit()
