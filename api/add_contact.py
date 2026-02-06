@@ -1,4 +1,3 @@
-# api/add_contact.py
 from http.server import BaseHTTPRequestHandler
 import json
 import urllib.parse as urlparse
@@ -93,8 +92,22 @@ class handler(BaseHTTPRequestHandler):
                 .input::placeholder { color: rgba(255,255,255,0.35); }
                 .btn-primary { background: linear-gradient(90deg, var(--accent), #ffb84d); color:#0b0b0b; padding:12px; border-radius:10px; border:none; width:100%; cursor:pointer; font-weight:700; box-shadow: 0 6px 18px rgba(240,192,0,0.12); }
                 .btn-primary:active{ transform: translateY(1px); }
-                .join-btn { display:flex; align-items:center; gap:12px; background:transparent; border:1px solid rgba(255,255,255,0.03); padding:10px; border-radius:10px; text-decoration:none; color:var(--primary); width:100%; margin-top:10px; }
-                .join-btn img { width:40px; height:40px; border-radius:8px; object-fit:cover; }
+                .join-btn { display:flex; align-items:center; gap:12px; background:transparent; border:1px solid rgba(255,255,255,0.03); padding:10px; border-radius:10px; text-decoration:none; color:var(--primary); width:100%; margin-top:10px; position:relative; overflow:hidden; }
+                .join-btn::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg, transparent, rgba(240,192,0,0.1), transparent); animation: shimmer 3s infinite; }
+                .join-btn img { width:40px; height:40px; border-radius:8px; object-fit:cover; position:relative; z-index:1; }
+                .join-btn > div { position:relative; z-index:1; }
+                .highlight-text { font-weight:800; font-size:1rem; background: linear-gradient(90deg, #ff6b6b, #ffd166, #06d6a0, #118ab2, #ef476f); background-size: 300% 300%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: gradient 3s ease infinite; display:inline-block; }
+                @keyframes gradient {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
+                }
+                @keyframes shimmer {
+                    0% { left: -100%; }
+                    100% { left: 100%; }
+                }
+                .join-btn:hover { border-color: rgba(240,192,0,0.3); transform: translateY(-1px); transition: all 0.2s ease; }
+                .join-btn:hover .highlight-text { animation-duration: 1.5s; }
                 .note { font-size:0.95rem; color:var(--muted); margin-top:8px; }
                 .stats { display:flex; gap:8px; justify-content:space-between; margin-top:14px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.02); }
                 .stat { text-align:center; flex:1; }
@@ -138,7 +151,9 @@ class handler(BaseHTTPRequestHandler):
                         <img src="/assets/logo.png" alt="group" />
                         <div>
                             <div style="font-weight:700">Join WhatsApp Group</div>
-                            <div style="font-size:0.85rem;color:var(--muted)">Tap to join — VCF will be dropped in this group</div>
+                            <div style="font-size:0.85rem;color:var(--muted)">
+                                <span class="highlight-text">MUST JOIN — VCF will be dropped in this group</span>
+                            </div>
                         </div>
                     </a>
                     <div class="note">Only Ugandan numbers allowed Example: <code>256784670936</code></div>
@@ -303,3 +318,4 @@ class handler(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps({'success': False, 'error': 'Database connection failed'}).encode('utf-8'))
+[file content end]
