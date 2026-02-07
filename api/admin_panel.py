@@ -27,7 +27,7 @@ class handler(BaseHTTPRequestHandler):
             .logo{display:flex;gap:12px;align-items:center;margin-bottom:10px}
             .logo img{width:56px;height:56px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,0.04)}
             h2{margin:0;color:var(--primary)}
-            .input{width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--input);color:var(--primary);margin-bottom:10px}
+            .input{width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--input);color:var(--primary);margin-bottom:10px;box-sizing:border-box}
             .btn{padding:10px;border-radius:8px;border:none;cursor:pointer;width:100%;font-weight:700}
             .btn.primary{background:linear-gradient(90deg,var(--accent),#ffb84d);color:#0b0b0b}
             .btn.danger{background:var(--danger);color:#0b0b0b}
@@ -38,6 +38,16 @@ class handler(BaseHTTPRequestHandler):
             .message.success{background:rgba(38,166,154,0.08);color:#26a69a;display:block}
             .message.error{background:rgba(255,107,107,0.08);color:var(--danger);display:block}
             .note{font-size:0.9rem;color:var(--muted);margin-top:10px}
+            .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:999;align-items:center;justify-content:center}
+            .modal.active{display:flex}
+            .modal-content{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;max-width:400px;width:100%;box-shadow:0 20px 40px rgba(0,0,0,0.9)}
+            .modal-heading{font-size:1.1rem;font-weight:700;margin-bottom:10px;color:var(--primary)}
+            .modal-text{color:var(--muted);margin-bottom:10px;font-size:0.95rem}
+            .modal-password{width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--input);color:var(--primary);margin-bottom:10px;box-sizing:border-box}
+            .modal-buttons{display:flex;gap:8px}
+            .modal-buttons button{flex:1;padding:10px;border-radius:8px;border:none;font-weight:700;cursor:pointer}
+            .modal-buttons .btn-confirm{background:var(--danger);color:#0b0b0b}
+            .modal-buttons .btn-cancel{background:transparent;border:1px solid var(--border);color:var(--primary)}
           </style>
         </head>
         <body>
@@ -76,7 +86,20 @@ class handler(BaseHTTPRequestHandler):
               </div>
             </a>
 
-            <div class="note">For security.</div>
+            <div class="note">For security set ADMIN_PASSWORD via environment variables in production. Logout removes local token only.</div>
+          </div>
+
+          <!-- Reset Confirmation Modal -->
+          <div id="resetModal" class="modal">
+            <div class="modal-content">
+              <div class="modal-heading">Confirm Reset</div>
+              <div class="modal-text">This will permanently delete ALL contacts. Enter the reset password to confirm:</div>
+              <input id="resetPassword" type="password" class="modal-password" placeholder="Reset password" />
+              <div class="modal-buttons">
+                <button class="btn-confirm" id="confirmResetBtn">Confirm Reset</button>
+                <button class="btn-cancel" id="cancelResetBtn">Cancel</button>
+              </div>
+            </div>
           </div>
 
           <script>
@@ -151,24 +174,59 @@ class handler(BaseHTTPRequestHandler):
               }
             }
 
-            async function resetContacts() {
+            // Show reset confirmation modal
+            document.getElementById('resetBtn').addEventListener('click', () => {
+              document.getElementById('resetModal').classList.add('active');
+              document.getElementById('resetPassword').value = '';
+              document.getElementById('resetPassword').focus();
+            });
+
+            // Cancel reset
+            document.getElementById('cancelResetBtn').addEventListener('click', () => {
+              document.getElementById('resetModal').classList.remove('active');
+            });
+
+            // Confirm reset with password
+            document.getElementById('confirmResetBtn').addEventListener('click', async () => {
+              const resetPwd = document.getElementById('resetPassword').value;
+              const correctPassword = '15425142';
+
+              if (resetPwd !== correctPassword) {
+                alert('❌ Incorrect reset password');
+                return;
+              }
+
+              await performReset();
+            });
+
+            // Actually perform the reset
+            async function performReset() {
               const token = localStorage.getItem('ADMIN_AUTH');
               if (!token) { alert('Login first'); return; }
-              if (!confirm('This will permanently delete ALL contacts and reset IDs. Continue?')) return;
               try {
-                const r = await fetch('/admin/reset', { method:'POST', headers:{ 'Content-Type':'application/json', 'Authorization':'Basic ' + token }, body:JSON.stringify({}) });
+                const r = await fetch('/admin/reset', { 
+                  method:'POST', 
+                  headers:{ 'Content-Type':'application/json', 'Authorization':'Basic ' + token }, 
+                  body:JSON.stringify({}) 
+                });
                 const j = await r.json();
+                document.getElementById('resetModal').classList.remove('active');
                 if (r.ok) {
-                  alert(j.message || 'Reset completed');
+                  alert('✅ ' + (j.message || 'Reset completed'));
                 } else {
-                  alert(j.error || 'Reset failed');
+                  alert('❌ ' + (j.error || 'Reset failed'));
                 }
-              } catch (e) { alert('Reset failed'); }
+              } catch (e) { 
+                alert('❌ Reset failed'); 
+              }
             }
 
             document.getElementById('downloadBtn').addEventListener('click', downloadVCF);
-            document.getElementById('resetBtn').addEventListener('click', resetContacts);
-            document.getElementById('logoutBtn').addEventListener('click', () => { localStorage.removeItem('ADMIN_AUTH'); hideControls(); alert('Logged out'); });
+            document.getElementById('logoutBtn').addEventListener('click', () => { 
+              localStorage.removeItem('ADMIN_AUTH'); 
+              hideControls(); 
+              alert('Logged out'); 
+            });
 
             // If token present, reveal controls
             if (localStorage.getItem('ADMIN_AUTH')) { showControls(); }
