@@ -129,8 +129,8 @@ class handler(BaseHTTPRequestHandler):
 
                 <div class="form-container">
                     <form id="contactForm">
-                        <input id="name" class="input" type="text" placeholder="Full Name (e.g., Uthuman)" required />
-                        <input id="phone" class="input" type="tel" placeholder="Phone number (e.g., 256784670936)" required />
+                        <input id="name" class="input" type="text" placeholder="Full Name (e.g., John Doe)" required />
+                        <input id="phone" class="input" type="tel" placeholder="Phone number (e.g., +256784670936 or +1234567890)" required />
                         <button type="submit" class="btn-primary">+ Add Contact</button>
                     </form>
 
@@ -141,7 +141,7 @@ class handler(BaseHTTPRequestHandler):
                             <div style="font-size:0.85rem;color:var(--muted)">Tap to join — VCF will be dropped in this group</div>
                         </div>
                     </a>
-                    <div class="note">Only Ugandan numbers allowed Example: <code>256784670936</code></div>
+                    <div class="note">Phone numbers from any country are accepted. Example: +256784670936, +1234567890, +442071838750</div>
                 </div>
 
                 <div class="stats">
@@ -189,7 +189,7 @@ class handler(BaseHTTPRequestHandler):
                     const phoneRaw = document.getElementById('phone').value.trim();
                     if (!name || !phoneRaw){ showMessage('Fill all fields', 'error'); return; }
                     const phone = phoneRaw.replace(/\\D/g, '');
-                    if (!phone.startsWith('256')){ showMessage('Only Ugandan numbers allowed.', 'error'); return; }
+                    if (!phone){ showMessage('Phone number must contain digits', 'error'); return; }
                     try{
                         const res = await fetch('/add', {
                             method: 'POST',
@@ -220,7 +220,7 @@ class handler(BaseHTTPRequestHandler):
         self.wfile.write(html_content.encode('utf-8'))
 
     def do_POST(self):
-        # Contact creation (same server-side checks as before)
+        # Contact creation (server-side checks, no country restriction)
         content_length = int(self.headers.get('Content-Length', 0))
         post_data = self.rfile.read(content_length)
         try:
@@ -234,7 +234,7 @@ class handler(BaseHTTPRequestHandler):
 
         name = (data.get('name', '') or '').strip()
         phone_raw = (data.get('phone', '') or '').strip()
-        phone = re.sub(r'\\D', '', phone_raw)
+        phone = re.sub(r'\\D', '', phone_raw)  # digits only
 
         if not name or not phone:
             self.send_response(400)
@@ -243,17 +243,12 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({'error': 'Name and phone are required'}).encode('utf-8'))
             return
 
-        if not phone.startswith('256'):
-            self.send_response(400)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            self.wfile.write(json.dumps({'error': 'Only Ugandan numbers are allowed'}).encode('utf-8'))
-            return
-
+        # No country restriction — accept any phone number with digits
         conn = get_connection()
         if conn:
             try:
                 cur = conn.cursor()
+                # Check duplicates by phone or name (case-insensitive)
                 cur.execute("SELECT id, name FROM contacts WHERE phone = %s OR LOWER(name) = LOWER(%s)", (phone, name))
                 existing = cur.fetchone()
                 if existing:
