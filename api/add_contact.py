@@ -93,6 +93,7 @@ class handler(BaseHTTPRequestHandler):
                 .input::placeholder { color: rgba(255,255,255,0.35); }
                 .btn-primary { background: linear-gradient(90deg, var(--accent), #ffb84d); color:#0b0b0b; padding:12px; border-radius:10px; border:none; width:100%; cursor:pointer; font-weight:700; box-shadow: 0 6px 18px rgba(240,192,0,0.12); }
                 .btn-primary:active{ transform: translateY(1px); }
+                .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
                 .join-btn { display:flex; align-items:center; gap:12px; background:transparent; border:1px solid rgba(255,255,255,0.03); padding:10px; border-radius:10px; text-decoration:none; color:var(--primary); width:100%; margin-top:10px; }
                 .join-btn img { width:40px; height:40px; border-radius:8px; object-fit:cover; }
                 .note { font-size:0.95rem; color:var(--muted); margin-top:8px; }
@@ -102,6 +103,16 @@ class handler(BaseHTTPRequestHandler):
                 .message { padding:10px; border-radius:8px; display:none; margin-bottom:10px; }
                 .message.success { background: rgba(38,166,154,0.08); color: var(--success); display:block; }
                 .message.error { background: rgba(255,107,107,0.08); color: var(--accent-2); display:block; }
+                .message.warning { background: rgba(240,192,0,0.08); color: var(--accent); display:block; }
+
+                .join-screen { display:none; text-align:center; padding:20px 0; }
+                .join-screen.active { display:block; }
+                .join-icon { font-size:3rem; color:var(--accent); margin-bottom:10px; }
+                .join-heading { font-size:1.1rem; font-weight:700; margin-bottom:8px; }
+                .join-text { color:var(--muted); margin-bottom:16px; }
+
+                .form-section { display:none; }
+                .form-section.active { display:block; }
 
                 footer { text-align:center; color:var(--muted); font-size:0.85rem; margin-top:12px; }
 
@@ -127,35 +138,62 @@ class handler(BaseHTTPRequestHandler):
 
                 <div id="message" class="message"></div>
 
-                <div class="form-container">
-                    <form id="contactForm">
-                        <input id="name" class="input" type="text" placeholder="Full Name (e.g., John Doe)" required />
-                        <input id="phone" class="input" type="tel" placeholder="Phone number (e.g., +256784670936 or +1234567890)" required />
-                        <button type="submit" class="btn-primary">+ Add Contact</button>
-                    </form>
-
-                    <a class="join-btn" id="joinGroup" href="https://chat.whatsapp.com/FQMf4pL5ezr5QlMKMANEqa" target="_blank" rel="noopener">
+                <!-- Join WhatsApp Screen (shown first) -->
+                <div id="joinScreen" class="form-container join-screen active">
+                    <div class="join-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="join-heading">Join Our Community</div>
+                    <div class="join-text">To add contacts and download the VCF file, you must first join our WhatsApp group. This ensures we have an active community.</div>
+                    
+                    <a id="joinGroupBtn" class="join-btn" href="https://chat.whatsapp.com/FQMf4pL5ezr5QlMKMANEqa" target="_blank" rel="noopener">
                         <img src="/assets/logo.png" alt="group" />
                         <div>
                             <div style="font-weight:700">Join WhatsApp Group</div>
-                            <div style="font-size:0.85rem;color:var(--muted)">Tap to join — VCF will be dropped in this group</div>
+                            <div style="font-size:0.85rem;color:var(--muted)">Click to join the group</div>
                         </div>
                     </a>
-                    <div class="note">Phone numbers from any country are accepted. Example: +256784670936, +1234567890, +442071838750</div>
+
+                    <div style="margin-top:20px; padding:12px; background:rgba(38,166,154,0.08); border-radius:8px;">
+                        <div style="font-size:0.9rem; color:var(--muted); margin-bottom:6px;">After joining:</div>
+                        <button id="confirmedJoinBtn" class="btn-primary" style="background:linear-gradient(90deg,var(--success),#2a9d8f)">✓ I've Joined the Group</button>
+                    </div>
+
+                    <div class="note">Once you join the group, come back and click "I've Joined" to unlock the form.</div>
                 </div>
 
-                <div class="stats">
-                    <div class="stat">
-                        <div class="num" id="contactCount">0</div>
-                        <div>Contacts</div>
+                <!-- Contact Form Section (hidden until group is joined) -->
+                <div id="formSection" class="form-section">
+                    <div class="form-container">
+                        <form id="contactForm">
+                            <input id="name" class="input" type="text" placeholder="Full Name (e.g., John Doe)" required />
+                            <input id="phone" class="input" type="tel" placeholder="Phone with country code (e.g., +256784670936)" required />
+                            <button type="submit" class="btn-primary">+ Add Contact</button>
+                        </form>
+
+                        <a id="joinGroupLink" class="join-btn" href="https://chat.whatsapp.com/FQMf4pL5ezr5QlMKMANEqa" target="_blank" rel="noopener">
+                            <img src="/assets/logo.png" alt="group" />
+                            <div>
+                                <div style="font-weight:700">Join WhatsApp Group</div>
+                                <div style="font-size:0.85rem;color:var(--muted)">Tap to join — VCF will be dropped in this group</div>
+                            </div>
+                        </a>
+                        <div class="note">Phone numbers must include country code. Examples: <strong>+256784670936</strong> (Uganda), <strong>+1234567890</strong> (USA), <strong>+442071838750</strong> (UK)</div>
                     </div>
-                    <div class="stat">
-                        <div class="num" id="todayCount">0</div>
-                        <div>Today</div>
-                    </div>
-                    <div class="stat">
-                        <div class="num" id="remainingCount">1000</div>
-                        <div>Remaining to 1000</div>
+
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="num" id="contactCount">0</div>
+                            <div>Contacts</div>
+                        </div>
+                        <div class="stat">
+                            <div class="num" id="todayCount">0</div>
+                            <div>Today</div>
+                        </div>
+                        <div class="stat">
+                            <div class="num" id="remainingCount">1000</div>
+                            <div>Remaining to 1000</div>
+                        </div>
                     </div>
                 </div>
 
@@ -164,6 +202,44 @@ class handler(BaseHTTPRequestHandler):
 
             <script>
                 const GOAL = 1000;
+                const GROUP_JOINED_KEY = 'STATUS_VIEWS_GROUP_JOINED';
+
+                // Check if user has joined the group (stored in localStorage)
+                function hasJoinedGroup() {
+                    return localStorage.getItem(GROUP_JOINED_KEY) === 'true';
+                }
+
+                // Mark user as joined
+                function markAsJoined() {
+                    localStorage.setItem(GROUP_JOINED_KEY, 'true');
+                    showFormSection();
+                }
+
+                // Show form section and hide join screen
+                function showFormSection() {
+                    document.getElementById('joinScreen').classList.remove('active');
+                    document.getElementById('formSection').classList.add('active');
+                    loadStats();
+                }
+
+                // Show join screen
+                function showJoinScreen() {
+                    document.getElementById('formSection').classList.remove('active');
+                    document.getElementById('joinScreen').classList.add('active');
+                }
+
+                // Check on page load
+                if (hasJoinedGroup()) {
+                    showFormSection();
+                } else {
+                    showJoinScreen();
+                }
+
+                // When user clicks "I've Joined the Group"
+                document.getElementById('confirmedJoinBtn').addEventListener('click', function(){
+                    markAsJoined();
+                    showMessage('Welcome! You can now add contacts.', 'success');
+                });
 
                 document.getElementById('adminPanelBtn').addEventListener('click', function(){
                     window.location.href = '/admin_panel';
@@ -187,9 +263,24 @@ class handler(BaseHTTPRequestHandler):
                     e.preventDefault();
                     const name = document.getElementById('name').value.trim();
                     const phoneRaw = document.getElementById('phone').value.trim();
+                    
                     if (!name || !phoneRaw){ showMessage('Fill all fields', 'error'); return; }
+                    
+                    // Phone must start with +
+                    if (!phoneRaw.startsWith('+')) {
+                        showMessage('Phone number must start with + and include country code (e.g., +256...)', 'error');
+                        return;
+                    }
+                    
+                    // Extract digits only (remove +, spaces, dashes, etc.)
                     const phone = phoneRaw.replace(/\\D/g, '');
-                    if (!phone){ showMessage('Phone number must contain digits', 'error'); return; }
+                    
+                    // Phone must have at least some digits after country code
+                    if (!phone || phone.length < 2) {
+                        showMessage('Phone number must include country code and at least one digit', 'error');
+                        return;
+                    }
+                    
                     try{
                         const res = await fetch('/add', {
                             method: 'POST',
@@ -205,11 +296,9 @@ class handler(BaseHTTPRequestHandler):
                 function showMessage(text, type){
                     const el = document.getElementById('message');
                     el.textContent = text;
-                    el.className = 'message ' + (type === 'success' ? 'success' : 'error');
+                    el.className = 'message ' + (type === 'success' ? 'success' : (type === 'error' ? 'error' : 'warning'));
                     setTimeout(()=>{ el.className = 'message'; el.textContent = ''; }, 6000);
                 }
-
-                loadStats();
             </script>
         </body>
         </html>
@@ -220,7 +309,7 @@ class handler(BaseHTTPRequestHandler):
         self.wfile.write(html_content.encode('utf-8'))
 
     def do_POST(self):
-        # Contact creation (server-side checks, no country restriction)
+        # Contact creation with country code validation
         content_length = int(self.headers.get('Content-Length', 0))
         post_data = self.rfile.read(content_length)
         try:
@@ -243,7 +332,14 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({'error': 'Name and phone are required'}).encode('utf-8'))
             return
 
-        # No country restriction — accept any phone number with digits
+        # Enforce country code: phone must have at least 2+ digits (country code + number)
+        if len(phone) < 2:
+            self.send_response(400)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({'error': 'Phone number must include a valid country code and number'}).encode('utf-8'))
+            return
+
         conn = get_connection()
         if conn:
             try:
