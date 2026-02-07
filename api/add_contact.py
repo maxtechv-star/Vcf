@@ -17,16 +17,19 @@ except ImportError:
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        # Serve assets (logo) when requested
+        # Serve assets (logo and audio) when requested
         if self.path.startswith('/assets/'):
             asset_path = self.path.lstrip('/')
-            # For now only serve assets/logo.png to keep it simple
-            if asset_path == 'assets/logo.png':
+            # Serve logo.png and sign_the_contract.mp3
+            if asset_path in ['assets/logo.png', 'assets/sign_the_contract.mp3']:
                 try:
                     with open(asset_path, 'rb') as f:
                         data = f.read()
                     self.send_response(200)
-                    self.send_header('Content-type', 'image/png')
+                    if asset_path.endswith('.png'):
+                        self.send_header('Content-type', 'image/png')
+                    elif asset_path.endswith('.mp3'):
+                        self.send_header('Content-type', 'audio/mpeg')
                     self.send_header('Cache-Control', 'public, max-age=86400')
                     self.end_headers()
                     self.wfile.write(data)
@@ -36,7 +39,7 @@ class handler(BaseHTTPRequestHandler):
                     self.send_response(200)
                     self.send_header('Content-type', 'text/plain')
                     self.end_headers()
-                    self.wfile.write(b'Logo not found. Upload assets/logo.png')
+                    self.wfile.write(b'Asset not found')
                     return
 
         # Serve main public HTML (dark / black theme)
@@ -200,6 +203,9 @@ class handler(BaseHTTPRequestHandler):
                 <footer>© 2026 STATUS VIEWS CENTRE. All rights reserved.</footer>
             </div>
 
+            <!-- Hidden audio element for playing the sound -->
+            <audio id="contractAudio" src="/assets/sign_the_contract.mp3" type="audio/mpeg"></audio>
+
             <script>
                 const GOAL = 1000;
                 const GROUP_JOINED_KEY = 'STATUS_VIEWS_GROUP_JOINED';
@@ -209,10 +215,21 @@ class handler(BaseHTTPRequestHandler):
                     return localStorage.getItem(GROUP_JOINED_KEY) === 'true';
                 }
 
-                // Mark user as joined
+                // Mark user as joined and play audio
                 function markAsJoined() {
-                    localStorage.setItem(GROUP_JOINED_KEY, 'true');
-                    showFormSection();
+                    // Play the audio file once
+                    const audio = document.getElementById('contractAudio');
+                    audio.play().catch(err => {
+                        console.warn('Could not play audio:', err);
+                        // Continue anyway even if audio fails
+                    });
+
+                    // Set flag and show form after a short delay (let audio start)
+                    setTimeout(() => {
+                        localStorage.setItem(GROUP_JOINED_KEY, 'true');
+                        showFormSection();
+                        showMessage('Welcome! You can now add contacts.', 'success');
+                    }, 100);
                 }
 
                 // Show form section and hide join screen
@@ -236,10 +253,7 @@ class handler(BaseHTTPRequestHandler):
                 }
 
                 // When user clicks "I've Joined the Group"
-                document.getElementById('confirmedJoinBtn').addEventListener('click', function(){
-                    markAsJoined();
-                    showMessage('Welcome! You can now add contacts.', 'success');
-                });
+                document.getElementById('confirmedJoinBtn').addEventListener('click', markAsJoined);
 
                 document.getElementById('adminPanelBtn').addEventListener('click', function(){
                     window.location.href = '/admin_panel';
