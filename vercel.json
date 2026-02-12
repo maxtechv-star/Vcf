@@ -1,0 +1,22 @@
+{
+  "builds": [
+    {
+      "src": "api/*.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    { "src": "/", "dest": "/api/add_contact.py" },
+    { "src": "/add", "dest": "/api/add_contact.py" },
+    { "src": "/download", "dest": "/api/download_vcf.py" },
+    { "src": "/contacts", "dest": "/api/get_contacts.py" },
+    { "src": "/assets/(.*)", "dest": "/api/add_contact.py" },
+    { "src": "/settings", "dest": "/api/settings.py" },
+    { "src": "/admin_panel", "dest": "/api/admin_panel.py" },
+    { "src": "/admin/login", "dest": "/api/admin_login.py" },
+    { "src": "/admin/settings", "dest": "/api/admin_settings.py" },
+    { "src": "/admin/delete_contact", "dest": "/api/admin_delete.py" },
+    { "src": "/admin/reset", "dest": "/api/admin_reset.py" },
+    { "src": "/(.*)", "dest": "/api/add_contact.py" }
+  ]
+}
