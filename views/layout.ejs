@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title : 'Meta VCF' %></title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'system-ui', 'sans-serif';
+      background: linear-gradient(135deg, #0b1220 0%, #071124 100%);
+      color: #e6eef0;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      border-bottom: 1px solid #17303a;
+    }
+
+    header h1 {
+      font-size: 28px;
+      color: #13e6c9;
+      font-weight: 700;
+    }
+
+    header p {
+      color: #6b7280;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    nav {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    nav a {
+      color: #79fff0;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    nav a:hover {
+      color: #13e6c9;
+    }
+
+    main {
+      max-width: 760px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+
+    section {
+      margin-bottom: 20px;
+    }
+
+    .progress-box {
+      background: #0f1724;
+      border-radius: 12px;
+      padding: 18px;
+      color: #a3f7e6;
+      border: 1px solid #17303a;
+    }
+
+    .progress-box h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .progress-stats {
+      margin-top: 12px;
+      display: flex;
+      gap: 30px;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat strong {
+      font-size: 32px;
+      color: #13e6c9;
+    }
+
+    .stat span {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    .form-container {
+      background: #0b1220;
+      border-radius: 12px;
+      padding: 18px;
+      color: #e6eef0;
+      border: 1px solid #17303a;
+    }
+
+    .form-container h3 {
+      margin-bottom: 12px;
+      color: #13e6c9;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #d1d5db;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #17303a;
+      background: #061018;
+      color: #fff;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #13e6c9;
+      box-shadow: 0 0 0 3px rgba(19, 230, 201, 0.1);
+    }
+
+    .form-group small {
+      display: block;
+      margin-top: 4px;
+      color: #94a3b8;
+      font-size: 12px;
+    }
+
+    button {
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 14px;
+    }
+
+    button.primary {
+      background: #13e6c9;
+      color: #042027;
+      width: 100%;
+    }
+
+    button.primary:hover {
+      background: #0fc9ad;
+      transform: translateY(-2px);
+    }
+
+    button.primary:disabled {
+      background: #6b7280;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    button.secondary {
+      background: #10b981;
+      color: #001e1b;
+      padding: 10px 16px;
+    }
+
+    button.secondary:hover {
+      background: #059669;
+    }
+
+    button.danger {
+      background: #ef4444;
+      color: white;
+      padding: 10px 16px;
+    }
+
+    button.danger:hover {
+      background: #dc2626;
+    }
+
+    button.info {
+      background: #06b6d4;
+      color: white;
+      padding: 10px 16px;
+    }
+
+    button.info:hover {
+      background: #0891b2;
+    }
+
+    .message {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .message.success {
+      background: #064e3b;
+      color: #c7f4e9;
+      border: 1px solid #10b981;
+    }
+
+    .message.error {
+      background: #7f1d1d;
+      color: #ffb4b4;
+      border: 1px solid #ef4444;
+    }
+
+    .warning-box {
+      background: #7c2d12;
+      border: 1px solid #ea580c;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 20px;
+      color: #ffedd5;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .warning-box strong {
+      color: #ffb4b4;
+    }
+
+    .download-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .download-link a {
+      color: #13e6c9;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .download-link a:hover {
+      color: #0fc9ad;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #6b7280;
+      font-size: 12px;
+      margin-top: 40px;
+      border-top: 1px solid #17303a;
+    }
+
+    .admin-controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .control-group {
+      flex: 1;
+      min-width: 200px;
+      background: #061018;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #17303a;
+    }
+
+    .control-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
+    .control-group input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      border: 1px solid #17303a;
+      background: #0b1220;
+      color: #fff;
+    }
+
+    .control-group button {
+      width: 100%;
+    }
+
+    .disclaimer {
+      background: #1f2937;
+      border-left: 4px solid #fbbf24;
+      padding: 12px;
+      border-radius: 4px;
+      margin: 20px 0;
+      font-size: 13px;
+      color: #fef3c7;
+    }
+
+    @media (max-width: 640px) {
+      header {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+      }
+
+      nav {
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+      }
+
+      nav a {
+        display: block;
+        padding: 8px;
+        background: #17303a;
+        border-radius: 6px;
+      }
+
+      .progress-stats {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .admin-controls {
+        flex-direction: column;
+      }
+
+      .control-group {
+        min-width: unset;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>🚀 Meta VCF</h1>
+      <p>Collect contacts & generate VCF files</p>
+    </div>
+    <nav>
+      <a href="https://your-other-projects.example" target="_blank" rel="noreferrer">📁 Other Projects</a>
+      <a href="/admin-login">🔐 Admin</a>
+    </nav>
+  </header>
+
+  <main>
+    <%- body %>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Meta VCF | Powered by Next-Gen Tech</p>
+  </footer>
+</body>
+</html>

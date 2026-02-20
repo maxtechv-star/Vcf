@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Meta VCF</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'system-ui', 'sans-serif';
+      background: linear-gradient(135deg, #0b1220 0%, #071124 100%);
+      color: #e6eef0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .login-container {
+      background: #0b1220;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 400px;
+      width: 100%;
+      border: 1px solid #17303a;
+    }
+
+    .login-container h1 {
+      text-align: center;
+      color: #13e6c9;
+      margin-bottom: 8px;
+      font-size: 24px;
+    }
+
+    .login-container p {
+      text-align: center;
+      color: #94a3b8;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #d1d5db;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #17303a;
+      background: #061018;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #13e6c9;
+      box-shadow: 0 0 0 3px rgba(19, 230, 201, 0.1);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: #13e6c9;
+      color: #042027;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 8px;
+    }
+
+    button:hover {
+      background: #0fc9ad;
+      transform: translateY(-2px);
+    }
+
+    .message {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .message.error {
+      background: #7f1d1d;
+      color: #ffb4b4;
+      border: 1px solid #ef4444;
+    }
+
+    .demo-info {
+      background: #1f2937;
+      border-left: 4px solid #fbbf24;
+      padding: 12px;
+      border-radius: 4px;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #fef3c7;
+      line-height: 1.5;
+    }
+
+    .demo-info strong {
+      color: #fca5a5;
+      display: block;
+    }
+
+    .demo-info code {
+      background: #0b1220;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>🔐 Admin Login</h1>
+    <p>Enter your credentials to access the admin panel</p>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="username" name="username" placeholder="username" required />
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" name="password" placeholder="••••••••" required />
+      </div>
+
+      <button type="submit">Login</button>
+      <div id="message"></div>
+    </form>
+
+    <div class="demo-info">
+      <strong>Demo Credentials:</strong>
+      Username: <code>admin</code><br>
+      Password: <code>uthuman</code>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const messageDiv = document.getElementById('message');
+
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
+
+        const json = await res.json();
+
+        if (res.ok) {
+          window.location.href = '/admin';
+        } else {
+          messageDiv.className = 'message error';
+          messageDiv.textContent = '❌ ' + (json?.message || 'Login failed');
+        }
+      } catch (err) {
+        messageDiv.className = 'message error';
+        messageDiv.textContent = '❌ Network error';
+      }
+    });
+  </script>
+</body>
+</html>

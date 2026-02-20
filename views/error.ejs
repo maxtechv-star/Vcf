@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error - Meta VCF</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'system-ui', 'sans-serif';
+      background: linear-gradient(135deg, #0b1220 0%, #071124 100%);
+      color: #e6eef0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .error-container {
+      text-align: center;
+      background: #0b1220;
+      border-radius: 12px;
+      padding: 40px;
+      max-width: 500px;
+      border: 1px solid #17303a;
+    }
+
+    .error-container h1 {
+      font-size: 48px;
+      color: #ef4444;
+      margin-bottom: 12px;
+    }
+
+    .error-container p {
+      color: #94a3b8;
+      margin-bottom: 24px;
+    }
+
+    .error-container a {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #13e6c9;
+      color: #042027;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: all 0.3s;
+    }
+
+    .error-container a:hover {
+      background: #0fc9ad;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="error-container">
+    <h1>❌ Error</h1>
+    <p><%= message %></p>
+    <a href="/">← Back to Home</a>
+  </div>
+</body>
+</html>

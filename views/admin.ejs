@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Meta VCF</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'system-ui', 'sans-serif';
+      background: linear-gradient(135deg, #0b1220 0%, #071124 100%);
+      color: #e6eef0;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      border-bottom: 1px solid #17303a;
+    }
+
+    header h1 {
+      font-size: 28px;
+      color: #13e6c9;
+      font-weight: 700;
+    }
+
+    nav a {
+      color: #79fff0;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    nav a:hover {
+      color: #13e6c9;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+
+    .progress-box {
+      background: #0f1724;
+      border-radius: 12px;
+      padding: 18px;
+      color: #a3f7e6;
+      border: 1px solid #17303a;
+      margin-bottom: 20px;
+    }
+
+    .progress-box h2 {
+      margin-bottom: 12px;
+    }
+
+    .progress-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat {
+      background: #061018;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #17303a;
+    }
+
+    .stat-label {
+      color: #94a3b8;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      color: #13e6c9;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+
+    .controls-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .control-card {
+      background: #0b1220;
+      border-radius: 12px;
+      padding: 18px;
+      border: 1px solid #17303a;
+    }
+
+    .control-card h3 {
+      color: #13e6c9;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #17303a;
+      background: #061018;
+      color: #fff;
+      font-size: 13px;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #13e6c9;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    button.success {
+      background: #10b981;
+      color: #001e1b;
+    }
+
+    button.success:hover {
+      background: #059669;
+    }
+
+    button.danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    button.danger:hover {
+      background: #dc2626;
+    }
+
+    button.info {
+      background: #06b6d4;
+      color: white;
+    }
+
+    button.info:hover {
+      background: #0891b2;
+    }
+
+    .message {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .message.success {
+      background: #064e3b;
+      color: #c7f4e9;
+      border: 1px solid #10b981;
+    }
+
+    .message.error {
+      background: #7f1d1d;
+      color: #ffb4b4;
+      border: 1px solid #ef4444;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #6b7280;
+      font-size: 12px;
+      margin-top: 40px;
+      border-top: 1px solid #17303a;
+    }
+
+    @media (max-width: 640px) {
+      .progress-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .controls-section {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🔐 Admin Panel</h1>
+    <nav>
+      <a href="/">← Back to Home</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="progress-box">
+      <h2>📊 Live Progress</h2>
+      <div class="progress-stats">
+        <div class="stat">
+          <div class="stat-label">Collected</div>
+          <div class="stat-value" id="collected">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Target</div>
+          <div class="stat-value" id="target">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls-section">
+      <!-- Download VCF -->
+      <div class="control-card">
+        <h3>⬇️ Download VCF</h3>
+        <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">Export all collected contacts as a VCF file.</p>
+        <button class="success" id="downloadBtn">Download VCF</button>
+        <div id="downloadMessage"></div>
+      </div>
+
+      <!-- Reset Contacts -->
+      <div class="control-card">
+        <h3>🔄 Reset Contacts</h3>
+        <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">Clear all contacts. Requires confirmation password.</p>
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <input type="password" id="resetConfirm" placeholder="Enter confirm password" value="1542" />
+        </div>
+        <button class="danger" id="resetBtn">Reset All Contacts</button>
+        <div id="resetMessage"></div>
+      </div>
+
+      <!-- Set Custom Goal -->
+      <div class="control-card">
+        <h3>🎯 Set Custom Goal</h3>
+        <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">Set a new target for contact collection.</p>
+        <div class="form-group">
+          <label>New Goal</label>
+          <input type="number" id="goalInput" placeholder="e.g., 1000" min="1" />
+        </div>
+        <button class="info" id="setGoalBtn">Set Goal</button>
+        <div id="goalMessage"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Meta VCF | Admin Panel</p>
+  </footer>
+
+  <script>
+    async function fetchCount() {
+      try {
+        const res = await fetch('/api/count');
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('collected').textContent = data.collected;
+          document.getElementById('target').textContent = data.target;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    document.getElementById('downloadBtn').addEventListener('click', async () => {
+      try {
+        const res = await fetch('/api/admin/export-vcf');
+        if (res.status === 401) {
+          window.location.href = '/admin-login';
+          return;
+        }
+        if (!res.ok) {
+          const json = await res.json();
+          document.getElementById('downloadMessage').className = 'message error';
+          document.getElementById('downloadMessage').textContent = '❌ ' + (json?.error || 'Failed');
+          return;
+        }
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'meta-contacts.vcf';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+        document.getElementById('downloadMessage').className = 'message success';
+        document.getElementById('downloadMessage').textContent = '✅ Download started!';
+      } catch (err) {
+        document.getElementById('downloadMessage').className = 'message error';
+        document.getElementById('downloadMessage').textContent = '❌ Error downloading file';
+      }
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', async () => {
+      if (!confirm('⚠️ Are you sure? This will delete ALL contacts!')) return;
+
+      const confirm_password = document.getElementById('resetConfirm').value;
+      try {
+        const res = await fetch('/api/admin/reset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ confirm_password }),
+        });
+
+        if (res.status === 401) {
+          window.location.href = '/admin-login';
+          return;
+        }
+
+        const json = await res.json();
+        if (!res.ok) {
+          document.getElementById('resetMessage').className = 'message error';
+          document.getElementById('resetMessage').textContent = '❌ ' + (json?.error || 'Failed');
+          return;
+        }
+
+        document.getElementById('resetMessage').className = 'message success';
+        document.getElementById('resetMessage').textContent = '✅ All contacts cleared!';
+        fetchCount();
+      } catch (err) {
+        document.getElementById('resetMessage').className = 'message error';
+        document.getElementById('resetMessage').textContent = '❌ Error resetting contacts';
+      }
+    });
+
+    document.getElementById('setGoalBtn').addEventListener('click', async () => {
+      const goal = document.getElementById('goalInput').value.trim();
+      if (!goal || isNaN(goal) || parseInt(goal) <= 0) {
+        document.getElementById('goalMessage').className = 'message error';
+        document.getElementById('goalMessage').textContent = '❌ Enter a valid number';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/admin/set-goal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ goal: parseInt(goal) }),
+        });
+
+        if (res.status === 401) {
+          window.location.href = '/admin-login';
+          return;
+        }
+
+        const json = await res.json();
+        if (!res.ok) {
+          document.getElementById('goalMessage').className = 'message error';
+          document.getElementById('goalMessage').textContent = '❌ ' + (json?.error || 'Failed');
+          return;
+        }
+
+        document.getElementById('goalMessage').className = 'message success';
+        document.getElementById('goalMessage').textContent = '✅ Goal set to ' + json.goal + '!';
+        document.getElementById('goalInput').value = '';
+        fetchCount();
+      } catch (err) {
+        document.getElementById('goalMessage').className = 'message error';
+        document.getElementById('goalMessage').textContent = '❌ Error setting goal';
+      }
+    });
+
+    // Initial fetch
+    fetchCount();
+    setInterval(fetchCount, 5000);
+  </script>
+</body>
+</html>
