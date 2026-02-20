@@ -5,11 +5,8 @@ async function parseJsonBody(req) {
     let raw = '';
     req.on('data', (chunk) => (raw += chunk));
     req.on('end', () => {
-      try {
-        resolve(raw ? JSON.parse(raw) : {});
-      } catch (e) {
-        resolve({});
-      }
+      try { resolve(raw ? JSON.parse(raw) : {}); }
+      catch (e) { resolve({}); }
     });
     req.on('error', () => resolve({}));
   });
@@ -26,13 +23,11 @@ module.exports = async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     return res.end(JSON.stringify({ error: 'unauthorized' }));
   }
-
   if (req.method !== 'POST') {
     res.statusCode = 405;
     res.setHeader('Content-Type', 'application/json');
     return res.end(JSON.stringify({ error: 'method not allowed' }));
   }
-
   try {
     const body = req.body || (await parseJsonBody(req));
     const { goal } = body || {};
@@ -42,7 +37,6 @@ module.exports = async (req, res) => {
       res.setHeader('Content-Type', 'application/json');
       return res.end(JSON.stringify({ error: 'invalid goal' }));
     }
-
     await db.setSetting('target_count', String(n));
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');

@@ -23,13 +23,11 @@ module.exports = async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     return res.end(JSON.stringify({ error: 'unauthorized' }));
   }
-
   if (req.method !== 'POST') {
     res.statusCode = 405;
     res.setHeader('Content-Type', 'application/json');
     return res.end(JSON.stringify({ error: 'method not allowed' }));
   }
-
   try {
     const body = req.body || (await parseJsonBody(req));
     const id = body?.id;
@@ -38,7 +36,6 @@ module.exports = async (req, res) => {
       res.setHeader('Content-Type', 'application/json');
       return res.end(JSON.stringify({ error: 'invalid id' }));
     }
-
     await db.query('DELETE FROM contacts WHERE id = $1', [parseInt(id, 10)]);
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');

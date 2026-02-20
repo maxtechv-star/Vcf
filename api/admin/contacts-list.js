@@ -5,16 +5,6 @@ function isAdmin(req) {
   return cookieHeader.split(';').some((c) => c.trim() === 'meta_admin=1');
 }
 
-function makeVCard(name, phone) {
-  const escapedName = (name || '').replace(/\n/g, ' ');
-  return `BEGIN:VCARD
-VERSION:3.0
-FN:${escapedName}
-TEL;TYPE=CELL:${phone}
-END:VCARD
-`;
-}
-
 module.exports = async (req, res) => {
   try {
     if (!isAdmin(req)) {
@@ -27,14 +17,12 @@ module.exports = async (req, res) => {
       res.setHeader('Content-Type', 'application/json');
       return res.end(JSON.stringify({ error: 'DATABASE_URL not configured' }));
     }
-    const rows = (await db.query('SELECT full_name, phone FROM contacts ORDER BY id')).rows;
-    const vcard = rows.map((r) => makeVCard(r.full_name, r.phone)).join('\n');
-    res.setHeader('Content-Type', 'text/vcard; charset=utf-8');
-    res.setHeader('Content-Disposition', 'attachment; filename="meta-contacts.vcf"');
+    const rows = (await db.query('SELECT id, full_name, phone, created_at FROM contacts ORDER BY created_at DESC')).rows;
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.statusCode = 200;
-    return res.end(vcard);
+    return res.end(JSON.stringify(rows));
   } catch (err) {
-    console.error('api/admin/export-vcf error:', err);
+    console.error('api/admin/contacts-list error:', err);
     res.statusCode = 500;
     res.setHeader('Content-Type', 'application/json');
     return res.end(JSON.stringify({ error: 'server error' }));

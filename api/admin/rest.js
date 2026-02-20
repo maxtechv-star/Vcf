@@ -5,11 +5,8 @@ async function parseJsonBody(req) {
     let raw = '';
     req.on('data', (chunk) => (raw += chunk));
     req.on('end', () => {
-      try {
-        resolve(raw ? JSON.parse(raw) : {});
-      } catch (e) {
-        resolve({});
-      }
+      try { resolve(raw ? JSON.parse(raw) : {}); }
+      catch (e) { resolve({}); }
     });
     req.on('error', () => resolve({}));
   });
@@ -26,30 +23,25 @@ module.exports = async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     return res.end(JSON.stringify({ error: 'unauthorized' }));
   }
-
   if (req.method !== 'POST') {
     res.statusCode = 405;
     res.setHeader('Content-Type', 'application/json');
     return res.end(JSON.stringify({ error: 'method not allowed' }));
   }
-
   try {
     const body = req.body || (await parseJsonBody(req));
     const { confirm_password } = body || {};
     const REQUIRED = process.env.RESET_CONFIRM || '1542';
-
     if (String(confirm_password) !== String(REQUIRED)) {
       res.statusCode = 400;
       res.setHeader('Content-Type', 'application/json');
       return res.end(JSON.stringify({ error: 'incorrect confirm password' }));
     }
-
     if (!process.env.DATABASE_URL) {
       res.statusCode = 500;
       res.setHeader('Content-Type', 'application/json');
       return res.end(JSON.stringify({ error: 'DATABASE_URL not configured' }));
     }
-
     await db.query('DELETE FROM contacts');
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');

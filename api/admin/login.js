@@ -1,5 +1,3 @@
-// POST handler for admin login
-// Path: /api/admin/login
 const cookie = require('cookie');
 
 async function parseJsonBody(req) {
@@ -38,12 +36,10 @@ module.exports = async (req, res) => {
     }
 
     if (String(username) === ADMIN_USER && String(password) === ADMIN_PASS) {
-      // Set cookie
       const cookieStr = cookie.serialize('meta_admin', '1', {
         path: '/',
         httpOnly: true,
         sameSite: 'lax',
-        // secure should be true in production (HTTPS)
         secure: process.env.NODE_ENV === 'production',
         maxAge: 60 * 60 * 24
       });
