@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "vercel dev",
-    "start": "node -e \"console.log('This app is serverless — run vercel dev for local testing.')\"",
-    "lint": "echo \"no lint configured\""
+    "start": "echo \"Serverless on Vercel\""
   },
   "dependencies": {
     "cookie": "^0.5.0",
