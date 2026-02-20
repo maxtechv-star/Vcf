@@ -1,0 +1,18 @@
+{
+  "buildCommand": "npm install",
+  "devCommand": "node api/server.js",
+  "outputDirectory": "./",
+  "functions": {
+    "api/**/*.js": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "DATABASE_URL": "@database_url",
+    "ADMIN_USER": "@admin_user",
+    "ADMIN_PASS": "@admin_pass",
+    "RESET_CONFIRM": "@reset_confirm",
+    "NODE_ENV": "production"
+  }
+}
