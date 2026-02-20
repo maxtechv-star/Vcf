@@ -9,10 +9,18 @@
     }
   },
   "env": {
-    "DATABASE_URL": "@database_url",
-    "ADMIN_USER": "@admin_user",
-    "ADMIN_PASS": "@admin_pass",
-    "RESET_CONFIRM": "@reset_confirm",
+    "DATABASE_URL": "@DATABASE_URL",
+    "ADMIN_USER": "@ADMIN_USER",
+    "ADMIN_PASS": "@ADMIN_PASS",
+    "RESET_CONFIRM": "@RESET_CONFIRM",
+    "TARGET_COUNT": "@TARGET_COUNT",
     "NODE_ENV": "production"
+  },
+  "buildEnvironment": {
+    "DATABASE_URL": "@DATABASE_URL",
+    "ADMIN_USER": "@ADMIN_USER",
+    "ADMIN_PASS": "@ADMIN_PASS",
+    "RESET_CONFIRM": "@RESET_CONFIRM",
+    "TARGET_COUNT": "@TARGET_COUNT"
   }
 }
