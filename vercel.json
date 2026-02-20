@@ -15,12 +15,5 @@
     "RESET_CONFIRM": "@RESET_CONFIRM",
     "TARGET_COUNT": "@TARGET_COUNT",
     "NODE_ENV": "production"
-  },
-  "buildEnvironment": {
-    "DATABASE_URL": "@DATABASE_URL",
-    "ADMIN_USER": "@ADMIN_USER",
-    "ADMIN_PASS": "@ADMIN_PASS",
-    "RESET_CONFIRM": "@RESET_CONFIRM",
-    "TARGET_COUNT": "@TARGET_COUNT"
   }
 }
