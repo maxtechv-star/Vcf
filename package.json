@@ -3,18 +3,17 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "node api/server.js",
-    "build": "echo 'Build complete'",
-    "start": "node api/server.js"
+    "dev": "vercel dev",
+    "start": "node -e \"console.log('This app is serverless — run vercel dev for local testing.')\"",
+    "lint": "echo \"no lint configured\""
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "ejs": "^3.1.8",
-    "pg": "^8.11.0",
+    "cookie": "^0.5.0",
     "dotenv": "^16.3.1",
-    "cookie-parser": "^1.4.6"
+    "ejs": "^3.1.8",
+    "pg": "^8.11.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "vercel": "^28.0.3"
   }
 }

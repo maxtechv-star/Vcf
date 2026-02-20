@@ -1,11 +1,16 @@
 {
   "buildCommand": "npm install",
-  "devCommand": "node api/server.js",
+  "devCommand": "vercel dev",
   "outputDirectory": "./",
   "functions": {
     "api/**/*.js": {
       "memory": 1024,
       "maxDuration": 30
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/", "destination": "/api/index" },
+    { "source": "/admin", "destination": "/api/admin" },
+    { "source": "/admin-login", "destination": "/api/admin-login" }
+  ]
 }
