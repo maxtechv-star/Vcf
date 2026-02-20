@@ -8,7 +8,8 @@
     body{ font-family:Inter, system-ui, sans-serif; background:linear-gradient(135deg,#0b1220,#071124); color:#e6eef0; margin:0; }
     header{ display:flex; justify-content:space-between; align-items:center; padding:20px; border-bottom:1px solid #17303a;}
     h1{ color:#13e6c9; margin:0;}
-    main{ max-width:900px; margin:20px auto; padding:20px;}
+    nav a{ color:#79fff0; text-decoration:none; }
+    main{ max-width:1000px; margin:20px auto; padding:20px;}
     .card{ background:#0b1220; padding:18px; border-radius:12px; border:1px solid #17303a; margin-bottom:12px;}
     .controls{ display:grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap:12px; }
     input{ width:100%; padding:8px; border-radius:6px; border:1px solid #17303a; background:#061018; color:#fff; }
@@ -19,12 +20,18 @@
     .message{ margin-top:8px; padding:8px; border-radius:6px; }
     .message.success{ background:#064e3b; color:#c7f4e9; border:1px solid #10b981;}
     .message.error{ background:#7f1d1d; color:#ffb4b4; border:1px solid #ef4444;}
+    table{ width:100%; border-collapse:collapse; margin-top:12px; }
+    th, td{ padding:8px; text-align:left; border-bottom:1px solid #17303a; font-size:14px; }
+    .small { font-size:13px; color:#94a3b8; }
+    .controls-top { display:flex; gap:12px; align-items:center; margin-bottom:12px; }
+    .sidebar { display:none; } /* keep top-left menu for home only or add if needed */
+    @media(max-width:640px){ .controls{ grid-template-columns:1fr; } table{ font-size:12px; } }
   </style>
 </head>
 <body>
   <header>
     <h1>🔐 Admin Panel</h1>
-    <nav><a href="/" style="color:#79fff0; text-decoration:none;">← Back to Home</a></nav>
+    <nav><a href="/">← Back to Home</a></nav>
   </header>
 
   <main>
@@ -32,45 +39,53 @@
       <h2>📊 Live Progress</h2>
       <div style="display:flex; gap:12px; margin-top:12px;">
         <div style="flex:1; background:#061018; padding:12px; border-radius:8px; border:1px solid #17303a;">
-          <div style="color:#94a3b8; font-size:12px;">Collected</div>
+          <div class="small">Collected</div>
           <div id="collected" style="font-size:24px; color:#13e6c9; font-weight:700;"><%= collected %></div>
         </div>
         <div style="flex:1; background:#061018; padding:12px; border-radius:8px; border:1px solid #17303a;">
-          <div style="color:#94a3b8; font-size:12px;">Target</div>
+          <div class="small">Target</div>
           <div id="target" style="font-size:24px; color:#13e6c9; font-weight:700;"><%= target %></div>
         </div>
       </div>
     </div>
 
-    <div class="controls">
-      <div class="card">
-        <h3>⬇️ Download VCF</h3>
-        <p style="color:#94a3b8;">Export all collected contacts as a VCF file.</p>
-        <button class="success" id="downloadBtn">Download VCF</button>
-        <div id="downloadMessage"></div>
+    <div class="controls-top">
+      <div style="flex:1;">
+        <button id="downloadBtn" class="success">⬇️ Download VCF (Admin)</button>
       </div>
 
-      <div class="card">
-        <h3>🔄 Reset Contacts</h3>
-        <p style="color:#94a3b8;">Clear all contacts. Requires confirmation password.</p>
-        <div style="margin-top:8px;">
-          <label>Confirm Password</label>
-          <input type="password" id="resetConfirm" value="1542" />
-        </div>
-        <button class="danger" id="resetBtn" style="margin-top:8px;">Reset All Contacts</button>
+      <div style="width:280px;">
+        <label>Confirm Password to Reset</label>
+        <input id="resetConfirm" type="password" value="1542" />
+        <button id="resetBtn" class="danger" style="margin-top:8px;">Reset All Contacts</button>
         <div id="resetMessage"></div>
       </div>
 
-      <div class="card">
-        <h3>🎯 Set Custom Goal</h3>
-        <p style="color:#94a3b8;">Set a new target number for collection.</p>
-        <div style="margin-top:8px;">
-          <label>New Goal</label>
-          <input type="number" id="goalInput" placeholder="e.g., 1000" min="1" />
-        </div>
-        <button class="info" id="setGoalBtn" style="margin-top:8px;">Set Goal</button>
+      <div style="width:220px;">
+        <label>Set Custom Goal</label>
+        <input id="goalInput" type="number" placeholder="e.g., 1000" min="1" />
+        <button id="setGoalBtn" class="info" style="margin-top:8px;">Set Goal</button>
         <div id="goalMessage"></div>
       </div>
+    </div>
+
+    <div class="card">
+      <h3>📇 Contacts</h3>
+      <p class="small">You can delete individual contacts from here. Deleted contacts will be removed from future VCF exports.</p>
+      <table id="contactsTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Added</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- rows will be rendered client-side -->
+        </tbody>
+      </table>
+      <div id="contactsMessage"></div>
     </div>
   </main>
 
@@ -92,8 +107,67 @@
       }
     }
 
+    async function fetchContacts() {
+      try {
+        const res = await fetch('/api/admin/contacts-list');
+        if (res.status === 401) { window.location.href = '/admin-login'; return; }
+        if (!res.ok) { document.getElementById('contactsMessage').textContent = 'Failed to load contacts'; return; }
+        const json = await res.json();
+        const tbody = document.querySelector('#contactsTable tbody');
+        tbody.innerHTML = '';
+        if (!json.length) {
+          tbody.innerHTML = '<tr><td colspan="4" class="small">No contacts collected yet.</td></tr>';
+          return;
+        }
+        json.forEach(c => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${escapeHtml(c.full_name)}</td>
+                          <td>${escapeHtml(c.phone)}</td>
+                          <td class="small">${new Date(c.created_at).toLocaleString()}</td>
+                          <td><button data-id="${c.id}" class="delBtn" style="padding:6px 10px;border-radius:6px;background:#ef4444;color:white;border:none;cursor:pointer;">Delete</button></td>`;
+          tbody.appendChild(tr);
+        });
+        // attach delete handlers
+        document.querySelectorAll('.delBtn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const id = btn.getAttribute('data-id');
+            if (!confirm('Delete this contact?')) return;
+            try {
+              const res = await fetch('/api/admin/delete-contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: parseInt(id,10) })
+              });
+              if (res.status === 401) return window.location.href = '/admin-login';
+              const json = await res.json();
+              if (!res.ok) {
+                document.getElementById('contactsMessage').className = 'message error';
+                document.getElementById('contactsMessage').textContent = '❌ ' + (json?.error || 'Failed to delete');
+                return;
+              }
+              document.getElementById('contactsMessage').className = 'message success';
+              document.getElementById('contactsMessage').textContent = '✅ Contact deleted';
+              fetchContacts();
+              fetchCount();
+            } catch (err) {
+              document.getElementById('contactsMessage').className = 'message error';
+              document.getElementById('contactsMessage').textContent = '❌ Network error';
+            }
+          });
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"'`]/g, (s) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;',"`":'&#96;'})[s]);
+    }
+
     document.getElementById('downloadBtn').addEventListener('click', async () => {
       try {
+        // Admin export bypasses goal requirement
         const res = await fetch('/api/admin/export-vcf');
         if (res.status === 401) return window.location.href = '/admin-login';
         if (!res.ok) {
@@ -137,6 +211,7 @@
         }
         document.getElementById('resetMessage').className = 'message success';
         document.getElementById('resetMessage').textContent = '✅ All contacts cleared!';
+        fetchContacts();
         fetchCount();
       } catch (err) {
         document.getElementById('resetMessage').className = 'message error';
@@ -174,8 +249,11 @@
       }
     });
 
+    // load on open
+    fetchContacts();
     fetchCount();
     setInterval(fetchCount, 5000);
+    setInterval(fetchContacts, 10000);
   </script>
 </body>
 </html>
