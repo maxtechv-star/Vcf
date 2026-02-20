@@ -1,5 +1,11 @@
 {
   "buildCommand": "npm install",
   "devCommand": "node api/server.js",
-  "outputDirectory": "./"
+  "outputDirectory": "./",
+  "functions": {
+    "api/**/*.js": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  }
 }
