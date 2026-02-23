@@ -2,258 +2,955 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Admin Panel - Meta VCF</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Dashboard - Meta VCF</title>
   <style>
-    body{ font-family:Inter, system-ui, sans-serif; background:linear-gradient(135deg,#0b1220,#071124); color:#e6eef0; margin:0; }
-    header{ display:flex; justify-content:space-between; align-items:center; padding:20px; border-bottom:1px solid #17303a;}
-    h1{ color:#13e6c9; margin:0;}
-    nav a{ color:#79fff0; text-decoration:none; }
-    main{ max-width:1000px; margin:20px auto; padding:20px;}
-    .card{ background:#0b1220; padding:18px; border-radius:12px; border:1px solid #17303a; margin-bottom:12px;}
-    .controls{ display:grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap:12px; }
-    input{ width:100%; padding:8px; border-radius:6px; border:1px solid #17303a; background:#061018; color:#fff; }
-    button{ width:100%; padding:10px; border-radius:8px; border:none; font-weight:700; cursor:pointer; }
-    .success{ background:#10b981; color:#001e1b;}
-    .danger{ background:#ef4444; color:#fff;}
-    .info{ background:#06b6d4; color:#fff;}
-    .message{ margin-top:8px; padding:8px; border-radius:6px; }
-    .message.success{ background:#064e3b; color:#c7f4e9; border:1px solid #10b981;}
-    .message.error{ background:#7f1d1d; color:#ffb4b4; border:1px solid #ef4444;}
-    table{ width:100%; border-collapse:collapse; margin-top:12px; }
-    th, td{ padding:8px; text-align:left; border-bottom:1px solid #17303a; font-size:14px; }
-    .small { font-size:13px; color:#94a3b8; }
-    .controls-top { display:flex; gap:12px; align-items:center; margin-bottom:12px; }
-    .sidebar { display:none; } /* keep top-left menu for home only or add if needed */
-    @media(max-width:640px){ .controls{ grid-template-columns:1fr; } table{ font-size:12px; } }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0f1a;
+      color: #e2e8f0;
+      line-height: 1.6;
+    }
+
+    /* Professional Dashboard Layout */
+    .dashboard {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: 280px;
+      background: linear-gradient(180deg, #0f172a 0%, #0a0f1f 100%);
+      border-right: 1px solid #1e293b;
+      padding: 2rem 1rem;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      padding-bottom: 2rem;
+      border-bottom: 1px solid #1e293b;
+      margin-bottom: 2rem;
+    }
+
+    .sidebar-header h1 {
+      color: #13e6c9;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .sidebar-header h1 span {
+      background: #13e6c9;
+      color: #0a0f1a;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .nav-menu {
+      list-style: none;
+    }
+
+    .nav-item {
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.875rem 1rem;
+      color: #94a3b8;
+      text-decoration: none;
+      border-radius: 10px;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+
+    .nav-link:hover {
+      background: #1e293b;
+      color: #13e6c9;
+    }
+
+    .nav-link.active {
+      background: #13e6c9;
+      color: #0a0f1a;
+    }
+
+    .nav-link i {
+      font-size: 1.25rem;
+      width: 24px;
+      text-align: center;
+    }
+
+    /* Main Content Area */
+    .main-content {
+      flex: 1;
+      margin-left: 280px;
+      padding: 2rem;
+      background: #0f1525;
+    }
+
+    /* Top Header */
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .page-title {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    .page-title span {
+      color: #13e6c9;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .header-actions button {
+      background: #1e293b;
+      border: none;
+      color: #94a3b8;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header-actions button:hover {
+      background: #2d3a4f;
+      color: #13e6c9;
+    }
+
+    /* Stats Cards Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: #1a2332;
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid #2d3748;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px -8px rgba(19, 230, 201, 0.2);
+      border-color: #13e6c9;
+    }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .stat-title {
+      color: #94a3b8;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(19, 230, 201, 0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #13e6c9;
+      font-size: 1.5rem;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-footer {
+      color: #94a3b8;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .stat-trend {
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    /* Quick Actions Panel */
+    .quick-actions {
+      background: #1a2332;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      border: 1px solid #2d3748;
+    }
+
+    .quick-actions h3 {
+      color: #fff;
+      margin-bottom: 1.5rem;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .action-btn {
+      background: #0f172a;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      padding: 1rem;
+      color: #e2e8f0;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+    }
+
+    .action-btn:hover {
+      background: #1e293b;
+      border-color: #13e6c9;
+      transform: translateY(-2px);
+    }
+
+    .action-btn i {
+      font-size: 1.5rem;
+      color: #13e6c9;
+    }
+
+    .action-btn.danger:hover {
+      border-color: #ef4444;
+    }
+
+    .action-btn.danger:hover i {
+      color: #ef4444;
+    }
+
+    /* Settings Panel */
+    .settings-panel {
+      background: #1a2332;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      border: 1px solid #2d3748;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .setting-item {
+      background: #0f172a;
+      border-radius: 12px;
+      padding: 1rem;
+    }
+
+    .setting-item label {
+      display: block;
+      color: #94a3b8;
+      font-size: 0.875rem;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    .setting-item input {
+      width: 100%;
+      padding: 0.75rem;
+      background: #1e293b;
+      border: 1px solid #2d3748;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .setting-item input:focus {
+      outline: none;
+      border-color: #13e6c9;
+      box-shadow: 0 0 0 3px rgba(19, 230, 201, 0.1);
+    }
+
+    .setting-item button {
+      width: 100%;
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      background: #13e6c9;
+      border: none;
+      border-radius: 8px;
+      color: #0a0f1a;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .setting-item button:hover {
+      background: #0fc9ad;
+      transform: translateY(-2px);
+    }
+
+    /* Contacts Table */
+    .contacts-section {
+      background: #1a2332;
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid #2d3748;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-header h3 {
+      color: #fff;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .search-box {
+      background: #0f172a;
+      border: 1px solid #2d3748;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      color: #fff;
+      outline: none;
+      width: 200px;
+    }
+
+    .search-box input::placeholder {
+      color: #4a5568;
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      padding: 1rem;
+      color: #94a3b8;
+      font-weight: 600;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #2d3748;
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #2d3748;
+      color: #e2e8f0;
+    }
+
+    tr:hover td {
+      background: #1e293b;
+    }
+
+    .delete-btn {
+      background: #ef4444;
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+    }
+
+    .delete-btn:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+    }
+
+    .badge {
+      background: #13e6c9;
+      color: #0a0f1a;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* Messages */
+    .message {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      font-weight: 500;
+    }
+
+    .message.success {
+      background: #064e3b;
+      color: #c7f4e9;
+      border: 1px solid #10b981;
+    }
+
+    .message.error {
+      background: #7f1d1d;
+      color: #ffb4b4;
+      border: 1px solid #ef4444;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 0;
+        padding: 0;
+        display: none;
+      }
+      
+      .main-content {
+        margin-left: 0;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .actions-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .settings-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <header>
-    <h1>🔐 Admin Panel</h1>
-    <nav><a href="/">← Back to Home</a></nav>
-  </header>
+  <div class="dashboard">
+    <!-- Professional Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>
+          Meta VCF
+          <span>ADMIN</span>
+        </h1>
+      </div>
+      
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="#" class="nav-link active">
+            <i class="fas fa-dashboard"></i>
+            Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/" class="nav-link">
+            <i class="fas fa-home"></i>
+            Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="fas fa-users"></i>
+            Contacts
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="fas fa-chart-line"></i>
+            Analytics
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="fas fa-gear"></i>
+            Settings
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/admin-login" class="nav-link">
+            <i class="fas fa-sign-out"></i>
+            Logout
+          </a>
+        </li>
+      </ul>
+    </aside>
 
-  <main>
-    <div class="card">
-      <h2>📊 Live Progress</h2>
-      <div style="display:flex; gap:12px; margin-top:12px;">
-        <div style="flex:1; background:#061018; padding:12px; border-radius:8px; border:1px solid #17303a;">
-          <div class="small">Collected</div>
-          <div id="collected" style="font-size:24px; color:#13e6c9; font-weight:700;"><%= collected %></div>
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Header -->
+      <div class="top-header">
+        <h1 class="page-title">
+          Welcome back, <span>Admin</span>
+        </h1>
+        <div class="header-actions">
+          <button id="downloadBtn">
+            <i class="fas fa-download"></i>
+            Export VCF
+          </button>
+          <button onclick="window.location.href='/'">
+            <i class="fas fa-external-link"></i>
+            View Site
+          </button>
         </div>
-        <div style="flex:1; background:#061018; padding:12px; border-radius:8px; border:1px solid #17303a;">
-          <div class="small">Target</div>
-          <div id="target" style="font-size:24px; color:#13e6c9; font-weight:700;"><%= target %></div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Total Collected</span>
+            <div class="stat-icon">
+              <i class="fas fa-users"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="collected"><%= collected %></div>
+          <div class="stat-footer">
+            <span class="stat-trend">
+              <i class="fas fa-arrow-up"></i> +12%
+            </span>
+            vs last week
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Target Goal</span>
+            <div class="stat-icon">
+              <i class="fas fa-bullseye"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="target"><%= target %></div>
+          <div class="stat-footer">
+            <span class="stat-trend">
+              <i class="fas fa-clock"></i>
+            </span>
+            Monthly goal
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Remaining</span>
+            <div class="stat-icon">
+              <i class="fas fa-hourglass-half"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="remaining"><%= Math.max(0, target - collected) %></div>
+          <div class="stat-footer">
+            <span class="stat-trend">
+              <i class="fas fa-chart-line"></i>
+            </span>
+            Need to reach goal
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Completion</span>
+            <div class="stat-icon">
+              <i class="fas fa-percent"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="percent"><%= target > 0 ? Math.round((collected / target) * 100) : 0 %>%</div>
+          <div class="stat-footer">
+            <span class="stat-trend">
+              <i class="fas fa-fire"></i>
+            </span>
+            Progress
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="controls-top">
-      <div style="flex:1;">
-        <button id="downloadBtn" class="success">⬇️ Download VCF (Admin)</button>
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <h3>
+          <i class="fas fa-bolt" style="color: #13e6c9;"></i>
+          Quick Actions
+        </h3>
+        <div class="actions-grid">
+          <button class="action-btn" id="downloadBtn2">
+            <i class="fas fa-download"></i>
+            Export Contacts
+          </button>
+          <button class="action-btn" onclick="refreshData()">
+            <i class="fas fa-sync"></i>
+            Refresh Data
+          </button>
+          <button class="action-btn" onclick="window.location.href='/api/admin/contacts-list'">
+            <i class="fas fa-eye"></i>
+            View Raw Data
+          </button>
+        </div>
       </div>
 
-      <div style="width:280px;">
-        <label>Confirm Password to Reset</label>
-        <input id="resetConfirm" type="password" value="1542" />
-        <button id="resetBtn" class="danger" style="margin-top:8px;">Reset All Contacts</button>
-        <div id="resetMessage"></div>
+      <!-- Settings Panel -->
+      <div class="settings-panel">
+        <h3 style="color: #fff; margin-bottom: 1.5rem;">
+          <i class="fas fa-sliders" style="color: #13e6c9;"></i>
+          Admin Controls
+        </h3>
+        
+        <div class="settings-grid">
+          <!-- Reset Password -->
+          <div class="setting-item">
+            <label><i class="fas fa-lock"></i> Reset Password</label>
+            <input type="password" id="resetConfirm" placeholder="Enter confirm password" value="1542" />
+            <button id="resetBtn" style="background: #ef4444; color: white;">
+              <i class="fas fa-trash"></i> Reset All Contacts
+            </button>
+            <div id="resetMessage"></div>
+          </div>
+
+          <!-- Set Goal -->
+          <div class="setting-item">
+            <label><i class="fas fa-bullseye"></i> Set Target Goal</label>
+            <input type="number" id="goalInput" placeholder="Enter new goal" min="1" />
+            <button id="setGoalBtn">
+              <i class="fas fa-check"></i> Update Goal
+            </button>
+            <div id="goalMessage"></div>
+          </div>
+
+          <!-- Danger Zone -->
+          <div class="setting-item">
+            <label><i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i> Danger Zone</label>
+            <button class="action-btn danger" onclick="if(confirm('Are you sure?')) localStorage.clear()" style="background: #ef4444; color: white;">
+              <i class="fas fa-skull"></i> Clear Cache
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div style="width:220px;">
-        <label>Set Custom Goal</label>
-        <input id="goalInput" type="number" placeholder="e.g., 1000" min="1" />
-        <button id="setGoalBtn" class="info" style="margin-top:8px;">Set Goal</button>
-        <div id="goalMessage"></div>
+      <!-- Contacts Table -->
+      <div class="contacts-section">
+        <div class="section-header">
+          <h3>
+            <i class="fas fa-address-book" style="color: #13e6c9;"></i>
+            Contact List
+            <span class="badge" id="contactCount">0</span>
+          </h3>
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search contacts..." />
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table id="contactsTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Full Name</th>
+                <th>Phone Number</th>
+                <th>Date Added</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="contactsBody">
+              <tr>
+                <td colspan="5" style="text-align: center; color: #94a3b8;">Loading contacts...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="contactsMessage"></div>
       </div>
-    </div>
-
-    <div class="card">
-      <h3>📇 Contacts</h3>
-      <p class="small">You can delete individual contacts from here. Deleted contacts will be removed from future VCF exports.</p>
-      <table id="contactsTable">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Added</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- rows will be rendered client-side -->
-        </tbody>
-      </table>
-      <div id="contactsMessage"></div>
-    </div>
-  </main>
-
-  <footer style="text-align:center; padding:20px; color:#6b7280; border-top:1px solid #17303a;">
-    <small>&copy; 2026 Meta VCF</small>
-  </footer>
+    </main>
+  </div>
 
   <script>
-    async function fetchCount() {
+    // Professional Admin JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+      loadContacts();
+      loadStats();
+      
+      // Set up intervals for real-time updates
+      setInterval(loadStats, 5000);
+      setInterval(loadContacts, 30000);
+      
+      // Search functionality
+      document.getElementById('searchInput')?.addEventListener('keyup', function(e) {
+        filterContacts(e.target.value);
+      });
+    });
+
+    // Load contacts with professional error handling
+    async function loadContacts() {
+      try {
+        const res = await fetch('/api/admin/Contacts-list');
+        if (res.status === 401) {
+          window.location.href = '/admin-login';
+          return;
+        }
+        
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        
+        const contacts = await res.json();
+        displayContacts(contacts);
+        document.getElementById('contactCount').textContent = contacts.length;
+        
+      } catch (err) {
+        console.error('Failed to load contacts:', err);
+        showMessage('contactsMessage', 'Failed to load contacts', 'error');
+      }
+    }
+
+    // Display contacts in table
+    function displayContacts(contacts) {
+      const tbody = document.getElementById('contactsBody');
+      
+      if (!contacts || contacts.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #94a3b8;">No contacts found</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = contacts.map(contact => `
+        <tr>
+          <td>#${contact.id}</td>
+          <td><strong>${escapeHtml(contact.full_name)}</strong></td>
+          <td>${escapeHtml(contact.phone)}</td>
+          <td>${new Date(contact.created_at).toLocaleString()}</td>
+          <td>
+            <button class="delete-btn" onclick="deleteContact(${contact.id})">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Filter contacts
+    function filterContacts(searchTerm) {
+      const rows = document.querySelectorAll('#contactsBody tr');
+      const term = searchTerm.toLowerCase();
+      
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(term) ? '' : 'none';
+      });
+    }
+
+    // Delete contact with confirmation
+    async function deleteContact(id) {
+      if (!confirm('Are you sure you want to delete this contact?')) return;
+      
+      try {
+        const res = await fetch('/api/admin/delete-contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id })
+        });
+        
+        if (res.status === 401) {
+          window.location.href = '/admin-login';
+          return;
+        }
+        
+        const data = await res.json();
+        
+        if (res.ok) {
+          showMessage('contactsMessage', 'Contact deleted successfully', 'success');
+          loadContacts();
+          loadStats();
+        } else {
+          showMessage('contactsMessage', data.error || 'Failed to delete', 'error');
+        }
+      } catch (err) {
+        showMessage('contactsMessage', 'Network error', 'error');
+      }
+    }
+
+    // Load statistics
+    async function loadStats() {
       try {
         const res = await fetch('/api/count');
         if (res.ok) {
           const data = await res.json();
           document.getElementById('collected').textContent = data.collected;
           document.getElementById('target').textContent = data.target;
+          document.getElementById('remaining').textContent = data.remaining;
+          document.getElementById('percent').textContent = data.percent + '%';
         }
       } catch (err) {
-        console.error(err);
+        console.error('Failed to load stats:', err);
       }
     }
 
-    async function fetchContacts() {
-      try {
-        const res = await fetch('/api/admin/contacts-list');
-        if (res.status === 401) { window.location.href = '/admin-login'; return; }
-        if (!res.ok) { document.getElementById('contactsMessage').textContent = 'Failed to load contacts'; return; }
-        const json = await res.json();
-        const tbody = document.querySelector('#contactsTable tbody');
-        tbody.innerHTML = '';
-        if (!json.length) {
-          tbody.innerHTML = '<tr><td colspan="4" class="small">No contacts collected yet.</td></tr>';
-          return;
-        }
-        json.forEach(c => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${escapeHtml(c.full_name)}</td>
-                          <td>${escapeHtml(c.phone)}</td>
-                          <td class="small">${new Date(c.created_at).toLocaleString()}</td>
-                          <td><button data-id="${c.id}" class="delBtn" style="padding:6px 10px;border-radius:6px;background:#ef4444;color:white;border:none;cursor:pointer;">Delete</button></td>`;
-          tbody.appendChild(tr);
-        });
-        // attach delete handlers
-        document.querySelectorAll('.delBtn').forEach(btn => {
-          btn.addEventListener('click', async (e) => {
-            const id = btn.getAttribute('data-id');
-            if (!confirm('Delete this contact?')) return;
-            try {
-              const res = await fetch('/api/admin/delete-contact', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: parseInt(id,10) })
-              });
-              if (res.status === 401) return window.location.href = '/admin-login';
-              const json = await res.json();
-              if (!res.ok) {
-                document.getElementById('contactsMessage').className = 'message error';
-                document.getElementById('contactsMessage').textContent = '❌ ' + (json?.error || 'Failed to delete');
-                return;
-              }
-              document.getElementById('contactsMessage').className = 'message success';
-              document.getElementById('contactsMessage').textContent = '✅ Contact deleted';
-              fetchContacts();
-              fetchCount();
-            } catch (err) {
-              document.getElementById('contactsMessage').className = 'message error';
-              document.getElementById('contactsMessage').textContent = '❌ Network error';
-            }
-          });
-        });
-      } catch (err) {
-        console.error(err);
-      }
+    // Refresh data
+    function refreshData() {
+      loadContacts();
+      loadStats();
+      showMessage('contactsMessage', 'Data refreshed', 'success');
     }
 
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str).replace(/[&<>"'`]/g, (s) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;',"`":'&#96;'})[s]);
-    }
-
-    document.getElementById('downloadBtn').addEventListener('click', async () => {
-      try {
-        // Admin export bypasses goal requirement
-        const res = await fetch('/api/admin/export-vcf');
-        if (res.status === 401) return window.location.href = '/admin-login';
-        if (!res.ok) {
-          const json = await res.json();
-          document.getElementById('downloadMessage').className = 'message error';
-          document.getElementById('downloadMessage').textContent = '❌ ' + (json?.error || 'Failed');
-          return;
+    // Download VCF
+    document.querySelectorAll('#downloadBtn, #downloadBtn2').forEach(btn => {
+      btn.addEventListener('click', async function() {
+        try {
+          const res = await fetch('/api/admin/export-vcf');
+          if (res.status === 401) {
+            window.location.href = '/admin-login';
+            return;
+          }
+          
+          const blob = await res.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `meta-contacts-${new Date().toISOString().split('T')[0]}.vcf`;
+          a.click();
+          window.URL.revokeObjectURL(url);
+        } catch (err) {
+          alert('Failed to download');
         }
-        const blob = await res.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'meta-contacts.vcf';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
-        document.getElementById('downloadMessage').className = 'message success';
-        document.getElementById('downloadMessage').textContent = '✅ Download started!';
-      } catch (err) {
-        document.getElementById('downloadMessage').className = 'message error';
-        document.getElementById('downloadMessage').textContent = '❌ Error downloading file';
-      }
+      });
     });
 
-    document.getElementById('resetBtn').addEventListener('click', async () => {
-      if (!confirm('⚠️ Are you sure? This will delete ALL contacts!')) return;
-      const confirm_password = document.getElementById('resetConfirm').value;
+    // Reset contacts
+    document.getElementById('resetBtn').addEventListener('click', async function() {
+      const confirmPass = document.getElementById('resetConfirm').value;
+      
+      if (!confirm('⚠️ WARNING: This will delete ALL contacts! Are you absolutely sure?')) return;
+      
       try {
         const res = await fetch('/api/admin/reset', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ confirm_password })
+          body: JSON.stringify({ confirm_password: confirmPass })
         });
-        if (res.status === 401) return window.location.href = '/admin-login';
-        const json = await res.json();
-        if (!res.ok) {
-          document.getElementById('resetMessage').className = 'message error';
-          document.getElementById('resetMessage').textContent = '❌ ' + (json?.error || 'Failed');
-          return;
+        
+        if (res.ok) {
+          showMessage('resetMessage', 'All contacts deleted successfully', 'success');
+          loadContacts();
+          loadStats();
+        } else {
+          const data = await res.json();
+          showMessage('resetMessage', data.error || 'Failed to reset', 'error');
         }
-        document.getElementById('resetMessage').className = 'message success';
-        document.getElementById('resetMessage').textContent = '✅ All contacts cleared!';
-        fetchContacts();
-        fetchCount();
       } catch (err) {
-        document.getElementById('resetMessage').className = 'message error';
-        document.getElementById('resetMessage').textContent = '❌ Error resetting contacts';
+        showMessage('resetMessage', 'Network error', 'error');
       }
     });
 
-    document.getElementById('setGoalBtn').addEventListener('click', async () => {
-      const goal = document.getElementById('goalInput').value.trim();
-      if (!goal || isNaN(goal) || parseInt(goal) <= 0) {
-        document.getElementById('goalMessage').className = 'message error';
-        document.getElementById('goalMessage').textContent = '❌ Enter a valid number';
+    // Set goal
+    document.getElementById('setGoalBtn').addEventListener('click', async function() {
+      const goal = document.getElementById('goalInput').value;
+      
+      if (!goal || goal < 1) {
+        showMessage('goalMessage', 'Please enter a valid number', 'error');
         return;
       }
+      
       try {
         const res = await fetch('/api/admin/set-goal', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ goal: parseInt(goal, 10) })
+          body: JSON.stringify({ goal: parseInt(goal) })
         });
-        if (res.status === 401) return window.location.href = '/admin-login';
-        const json = await res.json();
-        if (!res.ok) {
-          document.getElementById('goalMessage').className = 'message error';
-          document.getElementById('goalMessage').textContent = '❌ ' + (json?.error || 'Failed');
-          return;
+        
+        if (res.ok) {
+          const data = await res.json();
+          showMessage('goalMessage', `Goal updated to ${data.goal}`, 'success');
+          loadStats();
+          document.getElementById('goalInput').value = '';
+        } else {
+          const data = await res.json();
+          showMessage('goalMessage', data.error || 'Failed to set goal', 'error');
         }
-        document.getElementById('goalMessage').className = 'message success';
-        document.getElementById('goalMessage').textContent = '✅ Goal set to ' + json.goal + '!';
-        document.getElementById('goalInput').value = '';
-        fetchCount();
       } catch (err) {
-        document.getElementById('goalMessage').className = 'message error';
-        document.getElementById('goalMessage').textContent = '❌ Error setting goal';
+        showMessage('goalMessage', 'Network error', 'error');
       }
     });
 
-    // load on open
-    fetchContacts();
-    fetchCount();
-    setInterval(fetchCount, 5000);
-    setInterval(fetchContacts, 10000);
+    // Helper: Show message
+    function showMessage(elementId, text, type) {
+      const el = document.getElementById(elementId);
+      if (el) {
+        el.textContent = text;
+        el.className = `message ${type}`;
+        setTimeout(() => {
+          el.textContent = '';
+          el.className = '';
+        }, 3000);
+      }
+    }
+
+    // Helper: Escape HTML
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
   </script>
 </body>
 </html>
