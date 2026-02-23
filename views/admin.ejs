@@ -151,7 +151,7 @@
     /* Stats Cards Grid */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 1.5rem;
       margin-bottom: 2rem;
     }
@@ -162,12 +162,24 @@
       padding: 1.5rem;
       border: 1px solid #2d3748;
       transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
     }
 
-    .stat-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 24px -8px rgba(19, 230, 201, 0.2);
-      border-color: #13e6c9;
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 4px;
+      height: 100%;
+      background: #13e6c9;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .stat-card:hover::after {
+      opacity: 1;
     }
 
     .stat-header {
@@ -211,71 +223,6 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
-    }
-
-    .stat-trend {
-      color: #10b981;
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-
-    /* Quick Actions Panel */
-    .quick-actions {
-      background: #1a2332;
-      border-radius: 16px;
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-      border: 1px solid #2d3748;
-    }
-
-    .quick-actions h3 {
-      color: #fff;
-      margin-bottom: 1.5rem;
-      font-size: 1.25rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .actions-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-
-    .action-btn {
-      background: #0f172a;
-      border: 1px solid #2d3748;
-      border-radius: 12px;
-      padding: 1rem;
-      color: #e2e8f0;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 500;
-    }
-
-    .action-btn:hover {
-      background: #1e293b;
-      border-color: #13e6c9;
-      transform: translateY(-2px);
-    }
-
-    .action-btn i {
-      font-size: 1.5rem;
-      color: #13e6c9;
-    }
-
-    .action-btn.danger:hover {
-      border-color: #ef4444;
-    }
-
-    .action-btn.danger:hover i {
-      color: #ef4444;
     }
 
     /* Settings Panel */
@@ -342,7 +289,16 @@
       transform: translateY(-2px);
     }
 
-    /* Contacts Table */
+    .setting-item button.danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .setting-item button.danger:hover {
+      background: #dc2626;
+    }
+
+    /* Contacts Section */
     .contacts-section {
       background: #1a2332;
       border-radius: 16px;
@@ -355,6 +311,8 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
     .section-header h3 {
@@ -387,8 +345,36 @@
       color: #4a5568;
     }
 
+    /* Loading Spinner */
+    .loading-spinner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      text-align: center;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #1e293b;
+      border-top: 4px solid #13e6c9;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Table Styles */
     .table-responsive {
       overflow-x: auto;
+      border-radius: 12px;
+      background: #0f172a;
     }
 
     table {
@@ -405,12 +391,17 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
       border-bottom: 2px solid #2d3748;
+      background: #0f172a;
     }
 
     td {
       padding: 1rem;
       border-bottom: 1px solid #2d3748;
       color: #e2e8f0;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
     }
 
     tr:hover td {
@@ -426,20 +417,29 @@
       cursor: pointer;
       font-size: 0.875rem;
       transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    .delete-btn:hover {
+    .delete-btn:hover:not(:disabled) {
       background: #dc2626;
       transform: translateY(-2px);
+    }
+
+    .delete-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     .badge {
       background: #13e6c9;
       color: #0a0f1a;
       padding: 0.25rem 0.5rem;
-      border-radius: 4px;
+      border-radius: 20px;
       font-size: 0.75rem;
       font-weight: 600;
+      margin-left: 0.5rem;
     }
 
     /* Messages */
@@ -448,6 +448,18 @@
       border-radius: 8px;
       margin-top: 1rem;
       font-weight: 500;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .message.success {
@@ -462,28 +474,90 @@
       border: 1px solid #ef4444;
     }
 
+    .message.info {
+      background: #1e3a8a;
+      color: #bfdbfe;
+      border: 1px solid #3b82f6;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .page-btn {
+      background: #0f172a;
+      border: 1px solid #2d3748;
+      color: #94a3b8;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      background: #1e293b;
+      color: #13e6c9;
+      border-color: #13e6c9;
+    }
+
+    .page-btn.active {
+      background: #13e6c9;
+      color: #0a0f1a;
+      border-color: #13e6c9;
+    }
+
+    .page-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #94a3b8;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #2d3748;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .sidebar {
-        width: 0;
-        padding: 0;
         display: none;
       }
       
       .main-content {
         margin-left: 0;
+        padding: 1rem;
       }
       
       .stats-grid {
         grid-template-columns: 1fr;
       }
       
-      .actions-grid {
+      .settings-grid {
         grid-template-columns: 1fr;
       }
       
-      .settings-grid {
-        grid-template-columns: 1fr;
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .search-box {
+        width: 100%;
+      }
+      
+      .search-box input {
+        width: 100%;
       }
     }
   </style>
@@ -515,7 +589,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="#contacts" class="nav-link">
             <i class="fas fa-users"></i>
             Contacts
           </a>
@@ -527,7 +601,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="#settings" class="nav-link">
             <i class="fas fa-gear"></i>
             Settings
           </a>
@@ -549,11 +623,11 @@
           Welcome back, <span>Admin</span>
         </h1>
         <div class="header-actions">
-          <button id="downloadBtn">
+          <button id="downloadBtn" title="Export all contacts as VCF">
             <i class="fas fa-download"></i>
             Export VCF
           </button>
-          <button onclick="window.location.href='/'">
+          <button onclick="window.location.href='/'" title="View public site">
             <i class="fas fa-external-link"></i>
             View Site
           </button>
@@ -571,10 +645,8 @@
           </div>
           <div class="stat-value" id="collected"><%= collected %></div>
           <div class="stat-footer">
-            <span class="stat-trend">
-              <i class="fas fa-arrow-up"></i> +12%
-            </span>
-            vs last week
+            <i class="fas fa-calendar"></i>
+            All time
           </div>
         </div>
 
@@ -587,10 +659,8 @@
           </div>
           <div class="stat-value" id="target"><%= target %></div>
           <div class="stat-footer">
-            <span class="stat-trend">
-              <i class="fas fa-clock"></i>
-            </span>
-            Monthly goal
+            <i class="fas fa-flag"></i>
+            Current goal
           </div>
         </div>
 
@@ -603,10 +673,8 @@
           </div>
           <div class="stat-value" id="remaining"><%= Math.max(0, target - collected) %></div>
           <div class="stat-footer">
-            <span class="stat-trend">
-              <i class="fas fa-chart-line"></i>
-            </span>
-            Need to reach goal
+            <i class="fas fa-arrow-right"></i>
+            To reach goal
           </div>
         </div>
 
@@ -619,76 +687,44 @@
           </div>
           <div class="stat-value" id="percent"><%= target > 0 ? Math.round((collected / target) * 100) : 0 %>%</div>
           <div class="stat-footer">
-            <span class="stat-trend">
-              <i class="fas fa-fire"></i>
-            </span>
+            <i class="fas fa-chart-line"></i>
             Progress
           </div>
         </div>
       </div>
 
-      <!-- Quick Actions -->
-      <div class="quick-actions">
-        <h3>
-          <i class="fas fa-bolt" style="color: #13e6c9;"></i>
-          Quick Actions
-        </h3>
-        <div class="actions-grid">
-          <button class="action-btn" id="downloadBtn2">
-            <i class="fas fa-download"></i>
-            Export Contacts
-          </button>
-          <button class="action-btn" onclick="refreshData()">
-            <i class="fas fa-sync"></i>
-            Refresh Data
-          </button>
-          <button class="action-btn" onclick="window.location.href='/api/admin/contacts-list'">
-            <i class="fas fa-eye"></i>
-            View Raw Data
-          </button>
-        </div>
-      </div>
-
       <!-- Settings Panel -->
-      <div class="settings-panel">
+      <div class="settings-panel" id="settings">
         <h3 style="color: #fff; margin-bottom: 1.5rem;">
           <i class="fas fa-sliders" style="color: #13e6c9;"></i>
-          Admin Controls
+          Quick Controls
         </h3>
         
         <div class="settings-grid">
           <!-- Reset Password -->
           <div class="setting-item">
-            <label><i class="fas fa-lock"></i> Reset Password</label>
+            <label><i class="fas fa-lock"></i> Reset All Contacts</label>
             <input type="password" id="resetConfirm" placeholder="Enter confirm password" value="1542" />
-            <button id="resetBtn" style="background: #ef4444; color: white;">
-              <i class="fas fa-trash"></i> Reset All Contacts
+            <button class="danger" id="resetBtn">
+              <i class="fas fa-trash"></i> Reset Database
             </button>
             <div id="resetMessage"></div>
           </div>
 
           <!-- Set Goal -->
           <div class="setting-item">
-            <label><i class="fas fa-bullseye"></i> Set Target Goal</label>
+            <label><i class="fas fa-bullseye"></i> Update Target Goal</label>
             <input type="number" id="goalInput" placeholder="Enter new goal" min="1" />
             <button id="setGoalBtn">
-              <i class="fas fa-check"></i> Update Goal
+              <i class="fas fa-check"></i> Set New Goal
             </button>
             <div id="goalMessage"></div>
-          </div>
-
-          <!-- Danger Zone -->
-          <div class="setting-item">
-            <label><i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i> Danger Zone</label>
-            <button class="action-btn danger" onclick="if(confirm('Are you sure?')) localStorage.clear()" style="background: #ef4444; color: white;">
-              <i class="fas fa-skull"></i> Clear Cache
-            </button>
           </div>
         </div>
       </div>
 
-      <!-- Contacts Table -->
-      <div class="contacts-section">
+      <!-- Contacts Table with Loading State -->
+      <div class="contacts-section" id="contacts">
         <div class="section-header">
           <h3>
             <i class="fas fa-address-book" style="color: #13e6c9;"></i>
@@ -697,53 +733,120 @@
           </h3>
           <div class="search-box">
             <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Search contacts..." />
+            <input type="text" id="searchInput" placeholder="Search by name or phone..." />
           </div>
         </div>
 
-        <div class="table-responsive">
-          <table id="contactsTable">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Full Name</th>
-                <th>Phone Number</th>
-                <th>Date Added</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="contactsBody">
-              <tr>
-                <td colspan="5" style="text-align: center; color: #94a3b8;">Loading contacts...</td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-spinner">
+          <div class="spinner"></div>
+          <p>Loading contacts...</p>
+          <small style="color: #94a3b8;">This may take a few seconds</small>
         </div>
+
+        <!-- Table Container (initially hidden) -->
+        <div id="tableContainer" style="display: none;">
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Phone Number</th>
+                  <th>Date Added</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="contactsBody"></tbody>
+            </table>
+          </div>
+          
+          <!-- Pagination -->
+          <div class="pagination" id="pagination"></div>
+        </div>
+
+        <!-- Message Area -->
         <div id="contactsMessage"></div>
       </div>
     </main>
   </div>
 
   <script>
-    // Professional Admin JavaScript
+    // Professional Admin JavaScript with optimizations
     document.addEventListener('DOMContentLoaded', function() {
-      loadContacts();
-      loadStats();
+      console.log('Admin panel initialized');
       
-      // Set up intervals for real-time updates
-      setInterval(loadStats, 5000);
-      setInterval(loadContacts, 30000);
+      // Show loading state
+      showLoading(true);
       
-      // Search functionality
+      // Load data with timeout
+      Promise.all([
+        loadStatsWithTimeout(),
+        loadContactsWithTimeout()
+      ]).catch(error => {
+        console.error('Initial load failed:', error);
+        showMessage('contactsMessage', 'Failed to load data. Retrying...', 'error');
+        
+        // Retry after 3 seconds
+        setTimeout(() => {
+          loadContacts();
+          loadStats();
+        }, 3000);
+      });
+      
+      // Set up intervals with error handling
+      setInterval(() => {
+        loadStats().catch(e => console.log('Stats refresh failed'));
+      }, 10000); // Refresh every 10 seconds
+      
+      setInterval(() => {
+        loadContacts().catch(e => console.log('Contacts refresh failed'));
+      }, 30000); // Refresh every 30 seconds
+      
+      // Search with debounce
+      let searchTimeout;
       document.getElementById('searchInput')?.addEventListener('keyup', function(e) {
-        filterContacts(e.target.value);
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          filterContacts(e.target.value);
+        }, 300); // Debounce for 300ms
       });
     });
 
-    // Load contacts with professional error handling
+    // State management
+    let currentContacts = [];
+    let currentPage = 1;
+    const itemsPerPage = 10;
+
+    // Load with timeout to prevent hanging
+    async function loadWithTimeout(promise, timeoutMs = 5000) {
+      let timeoutId;
+      const timeoutPromise = new Promise((_, reject) => {
+        timeoutId = setTimeout(() => reject(new Error('Request timeout')), timeoutMs);
+      });
+      
+      return Promise.race([
+        promise,
+        timeoutPromise
+      ]).finally(() => clearTimeout(timeoutId));
+    }
+
+    // Load contacts with timeout
+    async function loadContactsWithTimeout() {
+      return loadWithTimeout(loadContacts(), 8000);
+    }
+
+    // Load stats with timeout
+    async function loadStatsWithTimeout() {
+      return loadWithTimeout(loadStats(), 5000);
+    }
+
+    // Load contacts
     async function loadContacts() {
       try {
+        showLoading(true);
+        
         const res = await fetch('/api/admin/Contacts-list');
+        
         if (res.status === 401) {
           window.location.href = '/admin-login';
           return;
@@ -752,77 +855,130 @@
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         
         const contacts = await res.json();
-        displayContacts(contacts);
-        document.getElementById('contactCount').textContent = contacts.length;
+        currentContacts = contacts || [];
         
+        // Update UI
+        displayContacts(currentContacts);
+        document.getElementById('contactCount').textContent = currentContacts.length;
+        showLoading(false);
+        
+        return contacts;
       } catch (err) {
         console.error('Failed to load contacts:', err);
-        showMessage('contactsMessage', 'Failed to load contacts', 'error');
+        showLoading(false);
+        showMessage('contactsMessage', 'Failed to load contacts. Retrying...', 'error');
+        throw err;
       }
     }
 
-    // Display contacts in table
+    // Display contacts with pagination
     function displayContacts(contacts) {
       const tbody = document.getElementById('contactsBody');
+      const pagination = document.getElementById('pagination');
       
       if (!contacts || contacts.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #94a3b8;">No contacts found</td></tr>';
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" style="text-align: center; padding: 3rem;">
+              <div class="empty-state">
+                <i class="fas fa-address-book"></i>
+                <p>No contacts found</p>
+                <small style="color: #94a3b8;">Contacts will appear here when users submit the form</small>
+              </div>
+            </td>
+          </tr>
+        `;
+        pagination.innerHTML = '';
         return;
       }
       
-      tbody.innerHTML = contacts.map(contact => `
+      // Calculate pagination
+      const start = (currentPage - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      const paginatedContacts = contacts.slice(start, end);
+      const totalPages = Math.ceil(contacts.length / itemsPerPage);
+      
+      // Display contacts
+      tbody.innerHTML = paginatedContacts.map(contact => `
         <tr>
-          <td>#${contact.id}</td>
           <td><strong>${escapeHtml(contact.full_name)}</strong></td>
           <td>${escapeHtml(contact.phone)}</td>
-          <td>${new Date(contact.created_at).toLocaleString()}</td>
+          <td>${formatDate(contact.created_at)}</td>
           <td>
-            <button class="delete-btn" onclick="deleteContact(${contact.id})">
+            <button class="delete-btn" onclick="deleteContact(${contact.id})" data-id="${contact.id}">
               <i class="fas fa-trash"></i> Delete
             </button>
           </td>
         </tr>
       `).join('');
+      
+      // Update pagination
+      renderPagination(totalPages);
+    }
+
+    // Format date
+    function formatDate(dateString) {
+      try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+      } catch {
+        return dateString;
+      }
+    }
+
+    // Render pagination
+    function renderPagination(totalPages) {
+      const pagination = document.getElementById('pagination');
+      if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+      }
+      
+      let html = '';
+      for (let i = 1; i <= totalPages; i++) {
+        html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" 
+                       onclick="goToPage(${i})"
+                       ${i === currentPage ? 'disabled' : ''}>
+                  ${i}
+                </button>`;
+      }
+      pagination.innerHTML = html;
+    }
+
+    // Go to page
+    function goToPage(page) {
+      currentPage = page;
+      displayContacts(currentContacts);
     }
 
     // Filter contacts
     function filterContacts(searchTerm) {
-      const rows = document.querySelectorAll('#contactsBody tr');
-      const term = searchTerm.toLowerCase();
+      if (!searchTerm.trim()) {
+        displayContacts(currentContacts);
+        return;
+      }
       
-      rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(term) ? '' : 'none';
-      });
+      const term = searchTerm.toLowerCase();
+      const filtered = currentContacts.filter(contact => 
+        (contact.full_name && contact.full_name.toLowerCase().includes(term)) ||
+        (contact.phone && contact.phone.toLowerCase().includes(term))
+      );
+      
+      currentPage = 1;
+      displayContacts(filtered);
     }
 
-    // Delete contact with confirmation
-    async function deleteContact(id) {
-      if (!confirm('Are you sure you want to delete this contact?')) return;
+    // Show/hide loading
+    function showLoading(show) {
+      const loadingEl = document.getElementById('loadingState');
+      const tableEl = document.getElementById('tableContainer');
       
-      try {
-        const res = await fetch('/api/admin/delete-contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id })
-        });
-        
-        if (res.status === 401) {
-          window.location.href = '/admin-login';
-          return;
-        }
-        
-        const data = await res.json();
-        
-        if (res.ok) {
-          showMessage('contactsMessage', 'Contact deleted successfully', 'success');
-          loadContacts();
-          loadStats();
-        } else {
-          showMessage('contactsMessage', data.error || 'Failed to delete', 'error');
-        }
-      } catch (err) {
-        showMessage('contactsMessage', 'Network error', 'error');
+      if (show) {
+        loadingEl.style.display = 'flex';
+        tableEl.style.display = 'none';
+      } else {
+        loadingEl.style.display = 'none';
+        tableEl.style.display = 'block';
       }
     }
 
@@ -839,44 +995,92 @@
         }
       } catch (err) {
         console.error('Failed to load stats:', err);
+        throw err;
       }
     }
 
-    // Refresh data
-    function refreshData() {
-      loadContacts();
-      loadStats();
-      showMessage('contactsMessage', 'Data refreshed', 'success');
+    // Delete contact
+    async function deleteContact(id) {
+      if (!confirm('Are you sure you want to delete this contact?')) return;
+      
+      const btn = document.querySelector(`button[data-id="${id}"]`);
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+      }
+      
+      try {
+        const res = await fetch('/api/admin/delete-contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id })
+        });
+        
+        if (res.status === 401) {
+          window.location.href = '/admin-login';
+          return;
+        }
+        
+        if (res.ok) {
+          showMessage('contactsMessage', 'Contact deleted successfully', 'success');
+          await loadContacts(); // Reload contacts
+          await loadStats(); // Update stats
+        } else {
+          const data = await res.json();
+          showMessage('contactsMessage', data.error || 'Failed to delete', 'error');
+        }
+      } catch (err) {
+        showMessage('contactsMessage', 'Network error', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-trash"></i> Delete';
+        }
+      }
     }
 
     // Download VCF
-    document.querySelectorAll('#downloadBtn, #downloadBtn2').forEach(btn => {
-      btn.addEventListener('click', async function() {
-        try {
-          const res = await fetch('/api/admin/export-vcf');
-          if (res.status === 401) {
-            window.location.href = '/admin-login';
-            return;
-          }
-          
-          const blob = await res.blob();
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `meta-contacts-${new Date().toISOString().split('T')[0]}.vcf`;
-          a.click();
-          window.URL.revokeObjectURL(url);
-        } catch (err) {
-          alert('Failed to download');
+    document.getElementById('downloadBtn').addEventListener('click', async function() {
+      const btn = this;
+      const originalHtml = btn.innerHTML;
+      
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exporting...';
+      
+      try {
+        const res = await fetch('/api/admin/export-vcf');
+        if (res.status === 401) {
+          window.location.href = '/admin-login';
+          return;
         }
-      });
+        
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `meta-contacts-${new Date().toISOString().split('T')[0]}.vcf`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
+        showMessage('contactsMessage', 'Export completed successfully', 'success');
+      } catch (err) {
+        showMessage('contactsMessage', 'Failed to download', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      }
     });
 
     // Reset contacts
     document.getElementById('resetBtn').addEventListener('click', async function() {
       const confirmPass = document.getElementById('resetConfirm').value;
+      const btn = this;
+      const originalHtml = btn.innerHTML;
       
-      if (!confirm('⚠️ WARNING: This will delete ALL contacts! Are you absolutely sure?')) return;
+      if (!confirm('⚠️ WARNING: This will delete ALL contacts! This action cannot be undone.')) return;
+      
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Resetting...';
       
       try {
         const res = await fetch('/api/admin/reset', {
@@ -887,25 +1091,33 @@
         
         if (res.ok) {
           showMessage('resetMessage', 'All contacts deleted successfully', 'success');
-          loadContacts();
-          loadStats();
+          await loadContacts();
+          await loadStats();
         } else {
           const data = await res.json();
           showMessage('resetMessage', data.error || 'Failed to reset', 'error');
         }
       } catch (err) {
         showMessage('resetMessage', 'Network error', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
       }
     });
 
     // Set goal
     document.getElementById('setGoalBtn').addEventListener('click', async function() {
       const goal = document.getElementById('goalInput').value;
+      const btn = this;
+      const originalHtml = btn.innerHTML;
       
       if (!goal || goal < 1) {
         showMessage('goalMessage', 'Please enter a valid number', 'error');
         return;
       }
+      
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
       
       try {
         const res = await fetch('/api/admin/set-goal', {
@@ -917,7 +1129,7 @@
         if (res.ok) {
           const data = await res.json();
           showMessage('goalMessage', `Goal updated to ${data.goal}`, 'success');
-          loadStats();
+          await loadStats();
           document.getElementById('goalInput').value = '';
         } else {
           const data = await res.json();
@@ -925,6 +1137,9 @@
         }
       } catch (err) {
         showMessage('goalMessage', 'Network error', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
       }
     });
 
