@@ -51,10 +51,16 @@
       display: flex; 
       align-items: center; 
       gap: 15px; 
+      position: relative;
     }
     
-    /* THREE LINES HAMBURGER MENU - FIXED AND VISIBLE */
-    #hamburgerBtn { 
+    /* SIMPLE DROPDOWN MENU - EASIER AND MORE RELIABLE */
+    .menu-container {
+      position: relative;
+      display: inline-block;
+    }
+    
+    #menuButton { 
       width: 44px; 
       height: 44px; 
       display: flex; 
@@ -71,16 +77,70 @@
       margin: 0;
     }
     
-    #hamburgerBtn:hover {
+    #menuButton:hover {
       background: var(--teal);
       color: #042027;
       transform: scale(1.05);
     }
     
-    #hamburgerBtn svg {
+    #menuButton svg {
       width: 26px;
       height: 26px;
       stroke-width: 2;
+    }
+    
+    /* DROPDOWN CONTENT */
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 50px;
+      left: 0;
+      background: rgba(2,6,9,0.98);
+      backdrop-filter: blur(10px);
+      min-width: 220px;
+      border: 2px solid var(--teal);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      z-index: 100;
+      padding: 10px 0;
+    }
+    
+    .dropdown-content.show {
+      display: block;
+    }
+    
+    .dropdown-content a {
+      display: block;
+      color: #e6eef0;
+      text-decoration: none;
+      padding: 14px 20px;
+      font-size: 16px;
+      transition: all 0.2s;
+      border-bottom: 1px solid #17303a;
+    }
+    
+    .dropdown-content a:last-child {
+      border-bottom: none;
+    }
+    
+    .dropdown-content a:hover {
+      background: #17303a;
+      color: var(--teal);
+      padding-left: 25px;
+    }
+    
+    .dropdown-content hr {
+      border: none;
+      border-top: 1px solid #17303a;
+      margin: 8px 0;
+    }
+    
+    .dropdown-content small {
+      color: #94a3b8;
+      display: block;
+      text-align: center;
+      padding: 10px;
+      font-size: 12px;
     }
     
     h1 { 
@@ -91,114 +151,7 @@
       text-shadow: 0 0 10px rgba(19, 230, 201, 0.5);
     }
     
-    /* Sidebar styles - FIXED */
-    #sidebar { 
-      position: fixed; 
-      top: 0; 
-      left: -320px; 
-      width: 300px; 
-      height: 100%; 
-      background: rgba(2,6,9,0.98); 
-      backdrop-filter: blur(10px); 
-      border-right: 2px solid var(--teal); 
-      padding: 20px; 
-      transition: left 0.3s ease; 
-      z-index: 1000;
-      box-shadow: 4px 0 20px rgba(0,0,0,0.7);
-      overflow-y: auto;
-    }
-    
-    #sidebar.open { 
-      left: 0; 
-    } 
-    
-    .sidebar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
-      padding-bottom: 15px;
-      border-bottom: 2px solid #17303a;
-    }
-    
-    .sidebar-header h3 { 
-      color: var(--teal); 
-      margin: 0;
-      font-size: 22px;
-      font-weight: 700;
-    }
-    
-    #closeSidebarBtn {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #061018;
-      border: 2px solid #17303a;
-      border-radius: 8px;
-      cursor: pointer;
-      color: #94a3b8;
-      transition: all 0.2s;
-      padding: 0;
-    }
-    
-    #closeSidebarBtn:hover {
-      background: #17303a;
-      color: #ef4444;
-      border-color: #ef4444;
-    }
-    
-    #sidebar a {
-      display: block; 
-      color: #e6eef0; 
-      text-decoration: none; 
-      padding: 14px 16px; 
-      margin-bottom: 12px; 
-      border-radius: 10px; 
-      background: #061018; 
-      border: 1px solid #17303a;
-      transition: all 0.2s;
-      font-size: 16px;
-    }
-    
-    #sidebar a:hover {
-      background: #17303a;
-      border-color: var(--teal);
-      transform: translateX(5px);
-    }
-    
-    #sidebar hr {
-      border: none;
-      border-top: 2px solid #17303a;
-      margin: 20px 0;
-    }
-    
-    #sidebar small {
-      color: #94a3b8;
-      display: block;
-      text-align: center;
-      font-size: 13px;
-    }
-    
-    /* Overlay - FIXED */
-    #sidebarOverlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(4px);
-      z-index: 999;
-      display: none;
-    }
-    
-    #sidebarOverlay.active {
-      display: block;
-    }
-    
-    /* Rest of your existing styles */
+    /* Rest of your styles */
     main { 
       max-width: 760px; 
       margin: 30px auto; 
@@ -244,7 +197,7 @@
       font-size: 16px;
     }
     
-    button:not(#hamburgerBtn):not(#closeSidebarBtn) { 
+    button:not(#menuButton) { 
       width: 100%; 
       padding: 14px; 
       border-radius: 10px; 
@@ -276,11 +229,6 @@
       position: relative; 
       z-index: 5; 
     }
-    
-    @media (max-width:640px) { 
-      main { margin: 20px 16px; } 
-      #sidebar { width: 85%; } 
-    }
   </style>
 </head>
 <body>
@@ -288,39 +236,30 @@
     <source src="/assets/download.mp4" type="video/mp4">
   </video>
   <div class="bg-overlay"></div>
-  
-  <!-- Overlay for sidebar -->
-  <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
   <header>
     <div class="left-controls">
-      <!-- THREE LINES HAMBURGER MENU - FIXED -->
-      <button id="hamburgerBtn" class="hamburger" aria-label="Open menu">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 6h18M3 12h18M3 18h18"/>
-        </svg>
-      </button>
+      <!-- SIMPLE DROPDOWN MENU -->
+      <div class="menu-container">
+        <button id="menuButton" aria-label="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18M3 12h18M3 18h18"/>
+          </svg>
+        </button>
+        
+        <!-- Dropdown content -->
+        <div id="dropdownMenu" class="dropdown-content">
+          <a href="<%= otherProject %>" target="_blank" rel="noreferrer">📁 Visit Other Projects</a>
+          <a href="/admin-login">🔐 Admin Panel</a>
+          <hr>
+          <small>© 2026 Meta Team</small>
+        </div>
+      </div>
+      
       <h1>🚀 Meta VCF</h1>
     </div>
     <div style="color:#94a3b8; font-size:13px;">Build by <strong>Meta Team</strong></div>
   </header>
-
-  <!-- Sidebar -->
-  <aside id="sidebar" class="sidebar" aria-hidden="true">
-    <div class="sidebar-header">
-      <h3>Menu</h3>
-      <button id="closeSidebarBtn" class="close-btn" aria-label="Close menu">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
-      </button>
-    </div>
-    
-    <a href="<%= otherProject %>" target="_blank" rel="noreferrer">📁 Visit Other Projects</a>
-    <a href="/admin-login">🔐 Admin Panel</a>
-    <hr>
-    <small>© 2026 Meta Team</small>
-  </aside>
 
   <main>
     <div class="warning">
@@ -329,12 +268,12 @@
 
     <section class="progress-box">
       <h2>📊 Live Progress Tracker</h2>
-      <div class="stats-container" style="display:flex; gap:15px; margin-top:15px;">
-        <div class="stat-card" style="flex:1; background:#061018; padding:15px; border-radius:12px; border:1px solid #17303a;">
+      <div style="display:flex; gap:15px; margin-top:15px;">
+        <div style="flex:1; background:#061018; padding:15px; border-radius:12px; border:1px solid #17303a;">
           <div style="color:#94a3b8; font-size:14px;">Collected</div>
           <div style="font-size:32px; color:#13e6c9; font-weight:700;" id="collected"><%= collected %></div>
         </div>
-        <div class="stat-card" style="flex:1; background:#061018; padding:15px; border-radius:12px; border:1px solid #17303a;">
+        <div style="flex:1; background:#061018; padding:15px; border-radius:12px; border:1px solid #17303a;">
           <div style="color:#94a3b8; font-size:14px;">Remaining</div>
           <div style="font-size:32px; color:#13e6c9; font-weight:700;" id="remaining"><%= remaining %></div>
         </div>
@@ -369,82 +308,36 @@
   </footer>
 
   <script>
-    // FIXED: Sidebar JavaScript - Wait for DOM to load
+    // SIMPLE DROPDOWN MENU - MUCH EASIER
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('DOM loaded - initializing sidebar');
+      const menuButton = document.getElementById('menuButton');
+      const dropdown = document.getElementById('dropdownMenu');
       
-      // Get elements
-      const sidebar = document.getElementById('sidebar');
-      const hamburgerBtn = document.getElementById('hamburgerBtn');
-      const closeBtn = document.getElementById('closeSidebarBtn');
-      const overlay = document.getElementById('sidebarOverlay');
-      
-      console.log('Elements found:', { 
-        sidebar: !!sidebar, 
-        hamburgerBtn: !!hamburgerBtn, 
-        closeBtn: !!closeBtn, 
-        overlay: !!overlay 
-      });
-      
-      // Check if elements exist
-      if (!sidebar || !hamburgerBtn || !closeBtn || !overlay) {
-        console.error('Sidebar elements not found!');
-        return;
+      if (menuButton && dropdown) {
+        // Toggle dropdown on button click
+        menuButton.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          dropdown.classList.toggle('show');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!menuButton.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('show');
+          }
+        });
+        
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && dropdown.classList.contains('show')) {
+            dropdown.classList.remove('show');
+          }
+        });
       }
-      
-      // Function to open sidebar
-      function openSidebar() {
-        console.log('Opening sidebar');
-        sidebar.classList.add('open');
-        overlay.classList.add('active');
-        sidebar.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden'; // Prevent scrolling
-      }
-      
-      // Function to close sidebar
-      function closeSidebar() {
-        console.log('Closing sidebar');
-        sidebar.classList.remove('open');
-        overlay.classList.remove('active');
-        sidebar.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = ''; // Restore scrolling
-      }
-      
-      // Add click event to hamburger button
-      hamburgerBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('Hamburger button clicked');
-        openSidebar();
-      });
-      
-      // Add click event to close button
-      closeBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('Close button clicked');
-        closeSidebar();
-      });
-      
-      // Add click event to overlay
-      overlay.addEventListener('click', function(e) {
-        e.preventDefault();
-        console.log('Overlay clicked');
-        closeSidebar();
-      });
-      
-      // Close on Escape key
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && sidebar.classList.contains('open')) {
-          console.log('Escape key pressed');
-          closeSidebar();
-        }
-      });
-      
-      console.log('Sidebar initialized successfully');
     });
 
-    // Rest of your existing JavaScript
+    // Rest of your JavaScript
     async function fetchCount() {
       try {
         const res = await fetch('/api/count');
@@ -512,7 +405,6 @@
       });
     }
 
-    // Initial fetch and polling
     fetchCount();
     setInterval(fetchCount, 5000);
   </script>
