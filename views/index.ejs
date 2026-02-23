@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover" />
   <title>Meta VCF - Contact Collection Platform</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
 
     :root {
@@ -27,77 +28,61 @@
       --gradient-1: linear-gradient(135deg, #13e6c9 0%, #0ea5e9 100%);
     }
 
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+    }
+
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
       background: var(--dark-bg);
       color: var(--text-primary);
-      line-height: 1.6;
+      line-height: 1.5;
       min-height: 100vh;
       position: relative;
-    }
-
-    /* Animated Background */
-    .bg-animated {
-      position: fixed;
-      top: 0;
-      left: 0;
+      overflow-x: hidden;
       width: 100%;
-      height: 100%;
-      z-index: -1;
-      overflow: hidden;
     }
 
-    .bg-gradient {
-      position: absolute;
-      top: 0;
-      left: 0;
+    .safe-top {
+      padding-top: env(safe-area-inset-top);
+    }
+    
+    .safe-bottom {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .container {
       width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at 20% 50%, rgba(19, 230, 201, 0.1) 0%, transparent 50%),
-                  radial-gradient(circle at 80% 80%, rgba(14, 165, 233, 0.1) 0%, transparent 50%);
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 clamp(1rem, 5vw, 2rem);
     }
 
-    .bg-particles {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: 
-        radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-        radial-gradient(circle at 90% 70%, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-      background-size: 100px 100px;
-      animation: particleMove 60s linear infinite;
-    }
-
-    @keyframes particleMove {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(50px, 50px); }
-    }
-
-    /* Header */
     .header {
-      background: rgba(10, 15, 26, 0.8);
+      background: rgba(10, 15, 26, 0.95);
       backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border-bottom: 1px solid rgba(45, 55, 72, 0.5);
       position: sticky;
       top: 0;
-      z-index: 50;
+      z-index: 100;
+      width: 100%;
     }
 
-    .header-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 1rem 2rem;
+    .header-content {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      height: 70px;
+      width: 100%;
     }
 
     .logo {
       display: flex;
       align-items: center;
       gap: 0.75rem;
+      flex-shrink: 0;
     }
 
     .logo-icon {
@@ -108,34 +93,38 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
+      font-size: 1.25rem;
       font-weight: bold;
       color: var(--dark-bg);
+      flex-shrink: 0;
     }
 
     .logo-text {
-      font-size: 1.5rem;
+      font-size: clamp(1.2rem, 4vw, 1.5rem);
       font-weight: 700;
       background: var(--gradient-1);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      white-space: nowrap;
     }
 
     .nav-menu {
       display: flex;
       align-items: center;
-      gap: 2rem;
+      gap: clamp(1rem, 2vw, 2rem);
     }
 
     .nav-link {
       color: var(--text-secondary);
       text-decoration: none;
       font-weight: 500;
+      font-size: clamp(0.875rem, 2vw, 1rem);
       transition: color 0.2s;
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      white-space: nowrap;
     }
 
     .nav-link:hover {
@@ -150,169 +139,135 @@
       font-weight: 600;
     }
 
-    .nav-link.highlight:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px var(--primary-glow);
-    }
-
-    /* Mobile menu button */
     .mobile-menu-btn {
       display: none;
-      background: none;
-      border: none;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      width: 44px;
+      height: 44px;
       color: var(--text-primary);
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-
-    /* Main Content */
-    .main-container {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 0 2rem;
-    }
-
-    /* Hero Section */
-    .hero-section {
-      text-align: center;
-      margin-bottom: 4rem;
-      animation: fadeInUp 0.8s ease;
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .hero-title {
-      font-size: 3.5rem;
-      font-weight: 800;
-      line-height: 1.2;
-      margin-bottom: 1.5rem;
-      background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero-subtitle {
       font-size: 1.25rem;
-      color: var(--text-secondary);
-      max-width: 600px;
-      margin: 0 auto;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
-    /* Notice Banner */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 70px;
+      left: 0;
+      right: 0;
+      background: rgba(10, 15, 26, 0.98);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 1rem;
+      z-index: 99;
+      transform: translateY(-100%);
+      transition: transform 0.3s ease;
+    }
+
+    .mobile-menu.active {
+      transform: translateY(0);
+    }
+
+    .mobile-menu a {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      color: var(--text-primary);
+      text-decoration: none;
+      border-bottom: 1px solid var(--card-border);
+      font-size: 1.1rem;
+    }
+
+    .mobile-menu a:last-child {
+      border-bottom: none;
+    }
+
+    .mobile-menu a i {
+      width: 24px;
+      color: var(--primary);
+    }
+
     .notice-banner {
       background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%);
       border-left: 4px solid var(--warning);
       border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 3rem;
+      padding: clamp(1rem, 3vw, 1.5rem);
+      margin: 1.5rem 0;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 1rem;
-      backdrop-filter: blur(10px);
-      animation: slideIn 0.6s ease;
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateX(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
+      width: 100%;
     }
 
     .notice-icon {
-      font-size: 2rem;
+      font-size: clamp(1.25rem, 4vw, 1.5rem);
+      flex-shrink: 0;
     }
 
     .notice-content {
       flex: 1;
+      min-width: 0;
     }
 
     .notice-title {
       color: var(--warning);
       font-weight: 600;
       margin-bottom: 0.25rem;
+      font-size: clamp(0.875rem, 2.5vw, 1rem);
     }
 
     .notice-text {
       color: var(--text-secondary);
+      font-size: clamp(0.875rem, 2.5vw, 1rem);
+      word-wrap: break-word;
     }
 
-    /* Stats Grid */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
-      margin-bottom: 3rem;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+      gap: clamp(1rem, 2vw, 1.5rem);
+      margin: 2rem 0;
+      width: 100%;
     }
 
     .stat-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 20px;
-      padding: 2rem;
+      padding: clamp(1.25rem, 3vw, 2rem);
       text-align: center;
       transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-      animation: fadeInUp 0.8s ease;
-      animation-fill-mode: both;
-    }
-
-    .stat-card:nth-child(1) { animation-delay: 0.1s; }
-    .stat-card:nth-child(2) { animation-delay: 0.2s; }
-    .stat-card:nth-child(3) { animation-delay: 0.3s; }
-
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: var(--gradient-1);
-      transform: scaleX(0);
-      transition: transform 0.3s ease;
+      width: 100%;
     }
 
     .stat-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 20px 30px -10px rgba(19, 230, 201, 0.2);
+      transform: translateY(-4px);
       border-color: var(--primary);
-    }
-
-    .stat-card:hover::before {
-      transform: scaleX(1);
+      box-shadow: 0 10px 20px -5px var(--primary-glow);
     }
 
     .stat-icon {
-      width: 60px;
-      height: 60px;
+      width: clamp(50px, 8vw, 60px);
+      height: clamp(50px, 8vw, 60px);
       background: rgba(19, 230, 201, 0.1);
       border-radius: 15px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 1.5rem;
-      font-size: 1.75rem;
+      margin: 0 auto 1rem;
+      font-size: clamp(1.25rem, 4vw, 1.75rem);
       color: var(--primary);
     }
 
     .stat-value {
-      font-size: 3rem;
+      font-size: clamp(2rem, 6vw, 3rem);
       font-weight: 800;
       color: var(--text-primary);
       line-height: 1;
@@ -321,29 +276,19 @@
 
     .stat-label {
       color: var(--text-secondary);
-      font-size: 1rem;
+      font-size: clamp(0.75rem, 2vw, 1rem);
       font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
 
-    .stat-trend {
-      margin-top: 1rem;
-      color: var(--success);
-      font-size: 0.875rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.25rem;
-    }
-
-    /* Progress Bar */
     .progress-container {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 20px;
-      padding: 2rem;
-      margin-bottom: 3rem;
+      padding: clamp(1.25rem, 3vw, 2rem);
+      margin: 2rem 0;
+      width: 100%;
     }
 
     .progress-header {
@@ -351,27 +296,29 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
 
     .progress-title {
-      font-size: 1.25rem;
+      font-size: clamp(1rem, 3vw, 1.25rem);
       font-weight: 600;
       color: var(--text-primary);
     }
 
     .progress-percent {
-      font-size: 2rem;
+      font-size: clamp(1.5rem, 4vw, 2rem);
       font-weight: 800;
       color: var(--primary);
     }
 
     .progress-bar-bg {
       width: 100%;
-      height: 20px;
+      height: clamp(12px, 2vw, 20px);
       background: rgba(45, 55, 72, 0.5);
       border-radius: 10px;
       overflow: hidden;
-      margin-bottom: 1rem;
+      margin: 1rem 0;
     }
 
     .progress-bar-fill {
@@ -379,56 +326,35 @@
       background: var(--gradient-1);
       border-radius: 10px;
       transition: width 0.5s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .progress-bar-fill::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      animation: shimmer 2s infinite;
-    }
-
-    @keyframes shimmer {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
     }
 
     .progress-stats {
       display: flex;
       justify-content: space-between;
       color: var(--text-secondary);
-      font-size: 0.875rem;
+      font-size: clamp(0.75rem, 2vw, 0.875rem);
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
 
-    /* Form Section */
     .form-section {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2rem;
-      margin-bottom: 3rem;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+      gap: clamp(1rem, 2vw, 2rem);
+      margin: 2rem 0;
+      width: 100%;
     }
 
     .form-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 24px;
-      padding: 2.5rem;
-      transition: all 0.3s ease;
-    }
-
-    .form-card:hover {
-      border-color: var(--primary);
-      box-shadow: 0 20px 30px -10px rgba(19, 230, 201, 0.2);
+      padding: clamp(1.5rem, 4vw, 2.5rem);
+      width: 100%;
     }
 
     .form-title {
-      font-size: 1.75rem;
+      font-size: clamp(1.5rem, 4vw, 1.75rem);
       font-weight: 700;
       margin-bottom: 0.5rem;
       background: var(--gradient-1);
@@ -439,61 +365,60 @@
 
     .form-subtitle {
       color: var(--text-secondary);
-      margin-bottom: 2rem;
+      margin-bottom: clamp(1.5rem, 3vw, 2rem);
+      font-size: clamp(0.875rem, 2.5vw, 1rem);
     }
 
     .input-group {
       margin-bottom: 1.5rem;
+      width: 100%;
     }
 
     .input-label {
       display: block;
       color: var(--text-secondary);
-      font-size: 0.875rem;
+      font-size: clamp(0.75rem, 2vw, 0.875rem);
       font-weight: 500;
       margin-bottom: 0.5rem;
     }
 
     .input-field {
       width: 100%;
-      padding: 1rem;
+      padding: clamp(0.75rem, 2vw, 1rem);
       background: rgba(10, 15, 26, 0.6);
       border: 2px solid var(--card-border);
       border-radius: 12px;
       color: var(--text-primary);
-      font-size: 1rem;
+      font-size: clamp(0.875rem, 2.5vw, 1rem);
       transition: all 0.3s ease;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
     .input-field:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 4px var(--primary-glow);
-    }
-
-    .input-field::placeholder {
-      color: var(--text-muted);
+      box-shadow: 0 0 0 3px var(--primary-glow);
     }
 
     .input-hint {
       margin-top: 0.5rem;
-      font-size: 0.75rem;
+      font-size: clamp(0.675rem, 2vw, 0.75rem);
       color: var(--text-muted);
     }
 
     .submit-btn {
       width: 100%;
-      padding: 1rem;
+      padding: clamp(0.875rem, 2.5vw, 1rem);
       background: var(--gradient-1);
       border: none;
       border-radius: 12px;
       color: var(--dark-bg);
       font-weight: 700;
-      font-size: 1rem;
+      font-size: clamp(0.875rem, 2.5vw, 1rem);
       cursor: pointer;
       transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .submit-btn:hover:not(:disabled) {
@@ -506,57 +431,34 @@
       cursor: not-allowed;
     }
 
-    .submit-btn.loading {
-      color: transparent;
-    }
-
-    .submit-btn.loading::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 20px;
-      height: 20px;
-      margin: -10px 0 0 -10px;
-      border: 2px solid var(--dark-bg);
-      border-top-color: transparent;
-      border-radius: 50%;
-      animation: buttonSpin 0.8s linear infinite;
-    }
-
-    @keyframes buttonSpin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* WhatsApp Card */
     .whatsapp-card {
       background: linear-gradient(135deg, rgba(37, 211, 102, 0.1) 0%, rgba(19, 230, 201, 0.1) 100%);
       border: 1px solid rgba(37, 211, 102, 0.3);
       border-radius: 24px;
-      padding: 2.5rem;
-      text-align: center;
-      transition: all 0.3s ease;
+      padding: clamp(1.5rem, 4vw, 2.5rem);
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      align-items: center;
+      text-align: center;
+      transition: all 0.3s ease;
     }
 
     .whatsapp-card:hover {
-      transform: translateY(-8px);
+      transform: translateY(-4px);
       border-color: #25d366;
       box-shadow: 0 20px 30px -10px rgba(37, 211, 102, 0.3);
     }
 
     .whatsapp-icon {
-      width: 80px;
-      height: 80px;
+      width: clamp(60px, 10vw, 80px);
+      height: clamp(60px, 10vw, 80px);
       background: #25d366;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       margin: 0 auto 1.5rem;
-      font-size: 2.5rem;
+      font-size: clamp(2rem, 5vw, 2.5rem);
       color: white;
       animation: pulse 2s infinite;
     }
@@ -566,7 +468,7 @@
         box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
       }
       70% {
-        box-shadow: 0 0 0 20px rgba(37, 211, 102, 0);
+        box-shadow: 0 0 0 15px rgba(37, 211, 102, 0);
       }
       100% {
         box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
@@ -574,7 +476,7 @@
     }
 
     .whatsapp-title {
-      font-size: 1.75rem;
+      font-size: clamp(1.25rem, 4vw, 1.75rem);
       font-weight: 700;
       margin-bottom: 1rem;
       color: #25d366;
@@ -583,6 +485,7 @@
     .whatsapp-description {
       color: var(--text-secondary);
       margin-bottom: 2rem;
+      font-size: clamp(0.875rem, 2.5vw, 1rem);
     }
 
     .whatsapp-btn {
@@ -590,14 +493,16 @@
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
-      padding: 1rem 2rem;
+      padding: clamp(0.75rem, 2vw, 1rem) clamp(1.5rem, 4vw, 2rem);
       background: #25d366;
       color: white;
       text-decoration: none;
       border-radius: 12px;
       font-weight: 600;
+      font-size: clamp(0.875rem, 2.5vw, 1rem);
       transition: all 0.3s ease;
-      margin-top: auto;
+      width: 100%;
+      max-width: 300px;
     }
 
     .whatsapp-btn:hover {
@@ -606,29 +511,29 @@
       box-shadow: 0 10px 20px -5px rgba(37, 211, 102, 0.5);
     }
 
-    /* Features Section */
     .features-section {
-      margin-bottom: 3rem;
+      margin: 3rem 0;
     }
 
     .features-title {
-      font-size: 2rem;
-      font-weight: 700;
       text-align: center;
+      font-size: clamp(1.5rem, 4vw, 2rem);
       margin-bottom: 2rem;
+      color: var(--text-primary);
     }
 
     .features-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+      gap: clamp(1rem, 2vw, 1.5rem);
+      width: 100%;
     }
 
     .feature-item {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 16px;
-      padding: 1.5rem;
+      padding: clamp(1.25rem, 3vw, 1.5rem);
       text-align: center;
       transition: all 0.3s ease;
     }
@@ -639,8 +544,8 @@
     }
 
     .feature-icon {
-      width: 48px;
-      height: 48px;
+      width: clamp(40px, 6vw, 48px);
+      height: clamp(40px, 6vw, 48px);
       background: rgba(19, 230, 201, 0.1);
       border-radius: 12px;
       display: flex;
@@ -648,29 +553,101 @@
       justify-content: center;
       margin: 0 auto 1rem;
       color: var(--primary);
-      font-size: 1.25rem;
+      font-size: clamp(1rem, 3vw, 1.25rem);
     }
 
     .feature-item h4 {
       margin-bottom: 0.5rem;
       color: var(--text-primary);
+      font-size: clamp(1rem, 2.5vw, 1.1rem);
     }
 
     .feature-item p {
       color: var(--text-secondary);
-      font-size: 0.875rem;
+      font-size: clamp(0.75rem, 2vw, 0.875rem);
     }
 
-    /* Message Styles */
+    .footer {
+      background: rgba(10, 15, 26, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid var(--card-border);
+      padding: clamp(2rem, 5vw, 3rem) 0;
+      margin-top: 3rem;
+      width: 100%;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+      gap: clamp(1.5rem, 3vw, 2rem);
+      width: 100%;
+    }
+
+    .footer-section h4 {
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+      font-size: clamp(1rem, 2.5vw, 1.1rem);
+    }
+
+    .footer-section p, .footer-section a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: clamp(0.75rem, 2vw, 0.875rem);
+      line-height: 1.8;
+      display: block;
+    }
+
+    .footer-section a:hover {
+      color: var(--primary);
+    }
+
+    .social-links {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .social-link {
+      width: clamp(36px, 6vw, 40px);
+      height: clamp(36px, 6vw, 40px);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s ease;
+      font-size: clamp(0.875rem, 2.5vw, 1rem);
+    }
+
+    .social-link:hover {
+      background: var(--primary);
+      color: var(--dark-bg);
+      transform: translateY(-2px);
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 2rem;
+      margin-top: 2rem;
+      border-top: 1px solid var(--card-border);
+      color: var(--text-muted);
+      font-size: clamp(0.675rem, 2vw, 0.75rem);
+    }
+
     .message {
       margin-top: 1rem;
-      padding: 1rem;
+      padding: clamp(0.75rem, 2vw, 1rem);
       border-radius: 8px;
       font-weight: 500;
-      animation: messageSlide 0.3s ease;
+      font-size: clamp(0.75rem, 2vw, 0.875rem);
+      word-wrap: break-word;
+      animation: slideIn 0.3s ease;
     }
 
-    @keyframes messageSlide {
+    @keyframes slideIn {
       from {
         opacity: 0;
         transform: translateY(-10px);
@@ -693,199 +670,125 @@
       border: 1px solid var(--danger);
     }
 
-    /* Footer */
-    .footer {
-      background: rgba(10, 15, 26, 0.8);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid var(--card-border);
-      padding: 3rem 2rem;
-      margin-top: 4rem;
-    }
-
-    .footer-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 2rem;
-    }
-
-    .footer-section h4 {
-      color: var(--text-primary);
-      margin-bottom: 1rem;
-    }
-
-    .footer-section p, .footer-section a {
-      color: var(--text-secondary);
-      text-decoration: none;
-      font-size: 0.875rem;
-      line-height: 1.8;
-    }
-
-    .footer-section a:hover {
-      color: var(--primary);
-    }
-
-    .social-links {
-      display: flex;
-      gap: 1rem;
-    }
-
-    .social-link {
-      width: 36px;
-      height: 36px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-secondary);
-      transition: all 0.3s ease;
-    }
-
-    .social-link:hover {
-      background: var(--primary);
-      color: var(--dark-bg);
-      transform: translateY(-2px);
-    }
-
-    .footer-bottom {
-      text-align: center;
-      padding-top: 2rem;
-      margin-top: 2rem;
-      border-top: 1px solid var(--card-border);
-      color: var(--text-muted);
-      font-size: 0.875rem;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 968px) {
-      .hero-title {
-        font-size: 2.5rem;
-      }
-
-      .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .form-section {
-        grid-template-columns: 1fr;
-      }
-
-      .features-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .footer-container {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
     @media (max-width: 768px) {
       .nav-menu {
         display: none;
       }
 
       .mobile-menu-btn {
+        display: flex;
+      }
+
+      .mobile-menu {
         display: block;
       }
 
-      .hero-title {
-        font-size: 2rem;
+      .header-content {
+        height: 60px;
       }
 
-      .stats-grid {
-        grid-template-columns: 1fr;
+      .stat-card:hover {
+        transform: none;
       }
 
-      .features-grid {
-        grid-template-columns: 1fr;
+      .feature-item:hover {
+        transform: none;
       }
 
-      .footer-container {
-        grid-template-columns: 1fr;
-        text-align: center;
-      }
-
-      .social-links {
-        justify-content: center;
+      .whatsapp-card:hover {
+        transform: none;
       }
     }
 
-    @media (max-width: 480px) {
-      .header-container {
-        padding: 1rem;
+    @media (max-width: 380px) {
+      .logo-text {
+        display: none;
       }
 
-      .main-container {
-        padding: 0 1rem;
+      .notice-banner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+      .header {
+        position: relative;
       }
 
-      .form-card, .whatsapp-card {
-        padding: 1.5rem;
+      .mobile-menu {
+        max-height: 80vh;
+        overflow-y: auto;
       }
+    }
 
-      .stat-value {
-        font-size: 2.5rem;
+    @media (hover: none) and (pointer: coarse) {
+      .stat-card:hover,
+      .feature-item:hover,
+      .submit-btn:hover,
+      .whatsapp-btn:hover,
+      .whatsapp-card:hover {
+        transform: none;
       }
+    }
+
+    html {
+      scroll-behavior: smooth;
     }
   </style>
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <!-- Animated Background -->
-  <div class="bg-animated">
-    <div class="bg-gradient"></div>
-    <div class="bg-particles"></div>
-  </div>
-
-  <!-- Header -->
-  <header class="header">
-    <div class="header-container">
-      <div class="logo">
-        <div class="logo-icon">
-          <i class="fas fa-address-book"></i>
+  <header class="header safe-top">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <div class="logo-icon">
+            <i class="fas fa-address-book"></i>
+          </div>
+          <span class="logo-text">Meta VCF</span>
         </div>
-        <span class="logo-text">Meta VCF</span>
+
+        <nav class="nav-menu">
+          <a href="#home" class="nav-link">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+          </a>
+          <a href="#features" class="nav-link">
+            <i class="fas fa-star"></i>
+            <span>Features</span>
+          </a>
+          <a href="#contact" class="nav-link">
+            <i class="fas fa-envelope"></i>
+            <span>Contact</span>
+          </a>
+          <a href="/admin-login" class="nav-link highlight">
+            <i class="fas fa-lock"></i>
+            <span>Admin</span>
+          </a>
+        </nav>
+
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+          <i class="fas fa-bars"></i>
+        </button>
       </div>
-
-      <!-- Desktop Navigation -->
-      <nav class="nav-menu">
-        <a href="#home" class="nav-link">
-          <i class="fas fa-home"></i>
-          Home
-        </a>
-        <a href="#features" class="nav-link">
-          <i class="fas fa-star"></i>
-          Features
-        </a>
-        <a href="#contact" class="nav-link">
-          <i class="fas fa-envelope"></i>
-          Contact
-        </a>
-        <a href="/admin-login" class="nav-link highlight">
-          <i class="fas fa-lock"></i>
-          Admin
-        </a>
-      </nav>
-
-      <!-- Mobile Menu Button -->
-      <button class="mobile-menu-btn" id="mobileMenuBtn">
-        <i class="fas fa-bars"></i>
-      </button>
     </div>
   </header>
 
-  <main class="main-container">
-    <!-- Notice Banner -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#home"><i class="fas fa-home"></i> Home</a>
+    <a href="#features"><i class="fas fa-star"></i> Features</a>
+    <a href="#contact"><i class="fas fa-envelope"></i> Contact</a>
+    <a href="/admin-login"><i class="fas fa-lock"></i> Admin</a>
+  </div>
+
+  <main class="container">
     <div class="notice-banner">
       <div class="notice-icon">
         <i class="fas fa-exclamation-triangle"></i>
       </div>
       <div class="notice-content">
-        <div class="notice-title">Important Notice</div>
+        <div class="notice-title">⚠️ Important Notice</div>
         <div class="notice-text">
           If you don't join the group or follow the channel, don't blame me if you miss the file! 
           Make sure to join and stay active.
@@ -893,7 +796,6 @@
       </div>
     </div>
 
-    <!-- Stats Grid -->
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-icon">
@@ -901,10 +803,6 @@
         </div>
         <div class="stat-value" id="collected"><%= collected %></div>
         <div class="stat-label">Collected</div>
-        <div class="stat-trend">
-          <i class="fas fa-arrow-up"></i>
-          Active Users
-        </div>
       </div>
 
       <div class="stat-card">
@@ -913,10 +811,6 @@
         </div>
         <div class="stat-value" id="remaining"><%= remaining %></div>
         <div class="stat-label">Remaining</div>
-        <div class="stat-trend">
-          <i class="fas fa-clock"></i>
-          Until Goal
-        </div>
       </div>
 
       <div class="stat-card">
@@ -925,14 +819,9 @@
         </div>
         <div class="stat-value" id="target"><%= target %></div>
         <div class="stat-label">Target</div>
-        <div class="stat-trend">
-          <i class="fas fa-flag"></i>
-          Monthly Goal
-        </div>
       </div>
     </div>
 
-    <!-- Progress Bar -->
     <div class="progress-container">
       <div class="progress-header">
         <span class="progress-title">Campaign Progress</span>
@@ -942,14 +831,12 @@
         <div class="progress-bar-fill" style="width: <%= percent %>%;"></div>
       </div>
       <div class="progress-stats">
-        <span><i class="fas fa-check-circle" style="color: var(--success);"></i> <%= collected %> completed</span>
-        <span><i class="fas fa-circle" style="color: var(--text-muted);"></i> <%= remaining %> to go</span>
+        <span><i class="fas fa-check-circle" style="color: var(--success);"></i> <span id="collected"><%= collected %></span> completed</span>
+        <span><i class="fas fa-circle" style="color: var(--text-muted);"></i> <span id="remaining"><%= remaining %></span> to go</span>
       </div>
     </div>
 
-    <!-- Form Section -->
     <div class="form-section" id="contact">
-      <!-- Submission Form -->
       <div class="form-card">
         <h2 class="form-title">Join the Network</h2>
         <p class="form-subtitle">Submit your details to be part of our community</p>
@@ -966,6 +853,7 @@
               class="input-field" 
               placeholder="Enter your full name" 
               required 
+              inputmode="text"
             />
           </div>
 
@@ -980,10 +868,11 @@
               class="input-field" 
               placeholder="+1234567890" 
               required 
+              inputmode="tel"
             />
             <div class="input-hint">
               <i class="fas fa-info-circle"></i>
-              Use international format (e.g., +1234567890)
+              Must start with + and country code (e.g., +1234567890)
             </div>
           </div>
 
@@ -994,7 +883,6 @@
         </form>
       </div>
 
-      <!-- WhatsApp Card -->
       <div class="whatsapp-card">
         <div class="whatsapp-icon">
           <i class="fab fa-whatsapp"></i>
@@ -1010,7 +898,6 @@
       </div>
     </div>
 
-    <!-- Features Section -->
     <div class="features-section" id="features">
       <h2 class="features-title">Why Join Us?</h2>
       <div class="features-grid">
@@ -1026,125 +913,130 @@
             <i class="fas fa-shield"></i>
           </div>
           <h4>Secure & Private</h4>
-          <p>Your data is encrypted and never shared with third parties</p>
+          <p>Your data is encrypted and never shared</p>
         </div>
         <div class="feature-item">
           <div class="feature-icon">
             <i class="fas fa-users"></i>
           </div>
           <h4>Active Community</h4>
-          <p>Join thousands of members in our growing community</p>
+          <p>Join thousands of members in our community</p>
         </div>
         <div class="feature-item">
           <div class="feature-icon">
             <i class="fas fa-download"></i>
           </div>
           <h4>Easy Export</h4>
-          <p>Download contacts in VCF format with one click</p>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <i class="fas fa-clock"></i>
-          </div>
-          <h4>24/7 Support</h4>
-          <p>Round-the-clock assistance for all your needs</p>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <i class="fas fa-gem"></i>
-          </div>
-          <h4>Premium Content</h4>
-          <p>Access exclusive files and resources</p>
+          <p>Download contacts in VCF format</p>
         </div>
       </div>
     </div>
   </main>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-container">
-      <div class="footer-section">
-        <h4>Meta VCF</h4>
-        <p>Building the future of contact management and community engagement.</p>
-      </div>
-      <div class="footer-section">
-        <h4>Quick Links</h4>
-        <p><a href="#home">Home</a></p>
-        <p><a href="#features">Features</a></p>
-        <p><a href="#contact">Contact</a></p>
-      </div>
-      <div class="footer-section">
-        <h4>Resources</h4>
-        <p><a href="#">Documentation</a></p>
-        <p><a href="#">API</a></p>
-        <p><a href="#">Support</a></p>
-      </div>
-      <div class="footer-section">
-        <h4>Connect</h4>
-        <div class="social-links">
-          <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-          <a href="#" class="social-link"><i class="fab fa-github"></i></a>
-          <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
-          <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
+  <footer class="footer safe-bottom">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-section">
+          <h4>Meta VCF</h4>
+          <p>Building the future of contact management and community engagement.</p>
+        </div>
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <p><a href="#home">Home</a></p>
+          <p><a href="#features">Features</a></p>
+          <p><a href="#contact">Contact</a></p>
+        </div>
+        <div class="footer-section">
+          <h4>Connect</h4>
+          <div class="social-links">
+            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; 2026 Meta VCF. Built by <strong>Meta Team</strong>. All rights reserved.</p>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Meta VCF. Built by <strong>Meta Team</strong>. All rights reserved.</p>
+      </div>
     </div>
   </footer>
 
   <script>
-    // Professional JavaScript
     document.addEventListener('DOMContentLoaded', function() {
-      initializeApp();
-    });
-
-    function initializeApp() {
-      // Mobile menu toggle
       const mobileBtn = document.getElementById('mobileMenuBtn');
-      const navMenu = document.querySelector('.nav-menu');
-      
-      if (mobileBtn) {
-        mobileBtn.addEventListener('click', () => {
-          navMenu.style.display = navMenu.style.display === 'flex' ? 'none' : 'flex';
+      const mobileMenu = document.getElementById('mobileMenu');
+      let menuOpen = false;
+
+      if (mobileBtn && mobileMenu) {
+        mobileBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          menuOpen = !menuOpen;
+          mobileMenu.classList.toggle('active', menuOpen);
+          mobileBtn.innerHTML = menuOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        });
+
+        document.addEventListener('click', function(e) {
+          if (menuOpen && !mobileMenu.contains(e.target) && !mobileBtn.contains(e.target)) {
+            menuOpen = false;
+            mobileMenu.classList.remove('active');
+            mobileBtn.innerHTML = '<i class="fas fa-bars"></i>';
+          }
+        });
+
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && menuOpen) {
+            menuOpen = false;
+            mobileMenu.classList.remove('active');
+            mobileBtn.innerHTML = '<i class="fas fa-bars"></i>';
+          }
         });
       }
 
-      // Initialize stats
-      fetchStats();
-      setInterval(fetchStats, 5000);
-
-      // Smooth scroll for anchor links
       document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
+        anchor.addEventListener('click', function(e) {
           e.preventDefault();
           const target = document.querySelector(this.getAttribute('href'));
           if (target) {
-            target.scrollIntoView({ behavior: 'smooth' });
+            target.scrollIntoView({ 
+              behavior: 'smooth',
+              block: 'start'
+            });
+            if (menuOpen) {
+              menuOpen = false;
+              mobileMenu.classList.remove('active');
+              mobileBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            }
           }
         });
       });
-    }
 
-    // Fetch live stats
+      fetchStats();
+      setInterval(fetchStats, 5000);
+    });
+
     async function fetchStats() {
       try {
         const response = await fetch('/api/count');
         if (response.ok) {
           const data = await response.json();
           
-          // Update stats with animation
-          animateValue('collected', data.collected);
-          animateValue('remaining', data.remaining);
-          animateValue('target', data.target);
+          document.querySelectorAll('#collected').forEach(el => {
+            if (el.id === 'collected') el.textContent = data.collected;
+          });
+          document.querySelectorAll('#remaining').forEach(el => {
+            if (el.id === 'remaining') el.textContent = data.remaining;
+          });
+          document.querySelectorAll('#target').forEach(el => {
+            if (el.id === 'target') el.textContent = data.target;
+          });
           
           const percentEl = document.getElementById('percent');
           if (percentEl) {
             percentEl.textContent = data.percent + '%';
           }
           
-          // Update progress bar
           const progressBar = document.querySelector('.progress-bar-fill');
           if (progressBar) {
             progressBar.style.width = data.percent + '%';
@@ -1155,33 +1047,6 @@
       }
     }
 
-    // Animate number changes
-    function animateValue(elementId, newValue) {
-      const element = document.getElementById(elementId);
-      if (!element) return;
-      
-      const oldValue = parseInt(element.textContent) || 0;
-      if (oldValue === newValue) return;
-      
-      const duration = 500;
-      const startTime = performance.now();
-      
-      function update(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        
-        const currentValue = Math.floor(oldValue + (newValue - oldValue) * progress);
-        element.textContent = currentValue;
-        
-        if (progress < 1) {
-          requestAnimationFrame(update);
-        }
-      }
-      
-      requestAnimationFrame(update);
-    }
-
-    // Form submission
     document.getElementById('contactForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       
@@ -1190,15 +1055,23 @@
       const submitBtn = document.getElementById('submitBtn');
       const messageDiv = document.getElementById('message');
       
-      // Validate phone number
-      if (!validatePhone(phone)) {
-        showMessage(messageDiv, 'Please enter a valid phone number with country code', 'error');
+      if (!fullName) {
+        showMessage(messageDiv, '❌ Please enter your full name', 'error');
         return;
       }
       
-      // Disable button and show loading
+      if (!validateName(fullName)) {
+        showMessage(messageDiv, '❌ Please enter a valid name using only letters and spaces', 'error');
+        return;
+      }
+      
+      if (!validatePhone(phone)) {
+        showMessage(messageDiv, '❌ Phone must start with + and country code (e.g., +1234567890)', 'error');
+        return;
+      }
+      
       submitBtn.disabled = true;
-      submitBtn.classList.add('loading');
+      submitBtn.textContent = 'Submitting...';
       messageDiv.textContent = '';
       messageDiv.className = 'message';
       
@@ -1218,46 +1091,47 @@
           showMessage(messageDiv, '✅ Thank you! Your contact has been submitted successfully.', 'success');
           document.getElementById('full_name').value = '';
           document.getElementById('phone').value = '';
-          fetchStats(); // Refresh stats
+          fetchStats();
         } else {
-          showMessage(messageDiv, '❌ ' + (data.message || 'Failed to submit'), 'error');
+          if (response.status === 409 || (data.message && data.message.includes('already exists'))) {
+            showMessage(messageDiv, '❌ This phone number is already registered!', 'error');
+          } else {
+            showMessage(messageDiv, '❌ ' + (data.message || 'Failed to submit'), 'error');
+          }
         }
       } catch (error) {
         showMessage(messageDiv, '❌ Network error. Please try again.', 'error');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.classList.remove('loading');
+        submitBtn.textContent = 'Submit Contact';
       }
     });
 
-    // Validate phone number
-    function validatePhone(phone) {
-      const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-      return phoneRegex.test(phone.replace(/\s/g, ''));
+    function validateName(name) {
+      const nameRegex = /^[A-Za-z\s\-']+$/;
+      return nameRegex.test(name) && name.length >= 2;
     }
 
-    // Show message helper
+    function validatePhone(phone) {
+      const cleanPhone = phone.replace(/\s/g, '');
+      
+      if (!cleanPhone.startsWith('+')) {
+        return false;
+      }
+      
+      const phoneRegex = /^\+\d{1,3}\d{4,14}$/;
+      return phoneRegex.test(cleanPhone);
+    }
+
     function showMessage(element, text, type) {
       element.textContent = text;
       element.className = `message ${type}`;
       
-      // Auto hide after 5 seconds
       setTimeout(() => {
         element.textContent = '';
         element.className = 'message';
       }, 5000);
     }
-
-    // Add input animations
-    document.querySelectorAll('.input-field').forEach(input => {
-      input.addEventListener('focus', function() {
-        this.parentElement.classList.add('focused');
-      });
-      
-      input.addEventListener('blur', function() {
-        this.parentElement.classList.remove('focused');
-      });
-    });
   </script>
 </body>
 </html>
