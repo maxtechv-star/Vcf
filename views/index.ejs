@@ -6,80 +6,109 @@
   <title>Meta VCF - Collect Contacts</title>
   <style>
     :root{ --teal:#13e6c9; --muted:#94a3b8; }
-    body { font-family: Inter, system-ui, sans-serif; background: black; color: #e6eef0; margin:0; padding:0; min-height:100vh; overflow-x:hidden; }
-    .bg-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -2; object-fit: cover; opacity: 0.12; }
-    .bg-overlay { position: fixed; inset: 0; background: linear-gradient(180deg, rgba(3,7,10,0.55), rgba(3,7,10,0.7)); z-index:-1; }
+    body { 
+      font-family: Inter, system-ui, sans-serif; 
+      background: black; 
+      color: #e6eef0; 
+      margin:0; 
+      padding:0; 
+      min-height:100vh; 
+      overflow-x:hidden; 
+    }
+    .bg-video { 
+      position: fixed; 
+      right: 0; 
+      bottom: 0; 
+      min-width: 100%; 
+      min-height: 100%; 
+      width: auto; 
+      height: auto; 
+      z-index: -2; 
+      object-fit: cover; 
+      opacity: 0.12; 
+    }
+    .bg-overlay { 
+      position: fixed; 
+      inset: 0; 
+      background: linear-gradient(180deg, rgba(3,7,10,0.55), rgba(3,7,10,0.7)); 
+      z-index:-1; 
+    }
     
     /* Header styles */
-    header{ 
-      display:flex; 
-      align-items:center; 
-      justify-content:space-between; 
-      padding:16px 20px; 
-      position:relative; 
-      z-index:10; 
+    header { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      padding: 15px 20px; 
+      position: relative; 
+      z-index: 10; 
+      background: rgba(2,6,9,0.8);
+      backdrop-filter: blur(5px);
+      border-bottom: 1px solid #17303a;
     }
     
     .left-controls { 
-      display:flex; 
-      align-items:center; 
-      gap:12px; 
+      display: flex; 
+      align-items: center; 
+      gap: 15px; 
     }
     
-    /* Three lines hamburger menu */
-    .hamburger { 
-      width:40px; 
-      height:40px; 
-      display:inline-flex; 
-      align-items:center; 
-      justify-content:center; 
-      background:#061018; 
-      border-radius:8px; 
-      border:1px solid #17303a; 
-      cursor:pointer;
+    /* THREE LINES HAMBURGER MENU - FIXED AND VISIBLE */
+    #hamburgerBtn { 
+      width: 44px; 
+      height: 44px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      background: #0b1a24; 
+      border-radius: 10px; 
+      border: 2px solid var(--teal); 
+      cursor: pointer;
       transition: all 0.2s;
-      color: #94a3b8;
-    }
-    
-    .hamburger:hover {
-      background: #17303a;
       color: var(--teal);
-      border-color: var(--teal);
+      box-shadow: 0 0 10px rgba(19, 230, 201, 0.3);
+      padding: 0;
+      margin: 0;
     }
     
-    .hamburger svg {
-      width: 24px;
-      height: 24px;
+    #hamburgerBtn:hover {
+      background: var(--teal);
+      color: #042027;
+      transform: scale(1.05);
     }
     
-    h1{ color:var(--teal); margin:0; font-size:20px; font-weight:800; }
+    #hamburgerBtn svg {
+      width: 26px;
+      height: 26px;
+      stroke-width: 2;
+    }
     
-    main{ max-width:760px; margin:40px auto; padding:20px; position:relative; z-index:5; }
-    .warning{ background:#7c2d12; color:#ffedd5; padding:12px; border-radius:8px; margin-bottom:20px; border:1px solid #ea580c; }
-    .progress-box{ background:#0f1724; padding:18px; border-radius:12px; border:1px solid #17303a; margin-bottom:20px; }
-    .form{ background:#0b1220; padding:18px; border-radius:12px; border:1px solid #17303a; }
-    input{ width:100%; padding:10px; border-radius:8px; border:1px solid #17303a; background:#061018; color:#fff; margin-top:6px; }
-    button{ width:100%; padding:12px; border-radius:10px; background:var(--teal); color:#042027; border:none; font-weight:700; margin-top:12px; cursor:pointer; }
-    .btn{ display:inline-block; padding:10px 18px; border-radius:8px; background:#25d366; color:#fff; text-decoration:none; font-weight:600; }
+    h1 { 
+      color: var(--teal); 
+      margin: 0; 
+      font-size: 22px; 
+      font-weight: 800; 
+      text-shadow: 0 0 10px rgba(19, 230, 201, 0.5);
+    }
     
-    /* Sidebar styles */
-    .sidebar { 
+    /* Sidebar styles - FIXED */
+    #sidebar { 
       position: fixed; 
       top: 0; 
       left: -320px; 
       width: 300px; 
       height: 100%; 
-      background: rgba(2,6,9,0.96); 
-      backdrop-filter: blur(6px); 
-      border-right: 1px solid #17303a; 
+      background: rgba(2,6,9,0.98); 
+      backdrop-filter: blur(10px); 
+      border-right: 2px solid var(--teal); 
       padding: 20px; 
-      transition: left 220ms ease; 
-      z-index:30;
-      box-shadow: 4px 0 15px rgba(0,0,0,0.5);
+      transition: left 0.3s ease; 
+      z-index: 1000;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.7);
       overflow-y: auto;
     }
     
-    .sidebar.open { 
+    #sidebar.open { 
       left: 0; 
     } 
     
@@ -87,92 +116,170 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #17303a;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #17303a;
     }
     
     .sidebar-header h3 { 
       color: var(--teal); 
       margin: 0;
-      font-size:20px; 
+      font-size: 22px;
+      font-weight: 700;
     }
     
-    .close-btn {
-      width: 36px;
-      height: 36px;
+    #closeSidebarBtn {
+      width: 40px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
       background: #061018;
-      border: 1px solid #17303a;
+      border: 2px solid #17303a;
       border-radius: 8px;
       cursor: pointer;
       color: #94a3b8;
       transition: all 0.2s;
+      padding: 0;
     }
     
-    .close-btn:hover {
+    #closeSidebarBtn:hover {
       background: #17303a;
-      color: #ffb4b4;
+      color: #ef4444;
       border-color: #ef4444;
     }
     
-    .sidebar a {
-      display:block; 
-      color:#e6eef0; 
-      text-decoration:none; 
-      padding:12px 14px; 
-      margin-bottom:10px; 
-      border-radius:8px; 
-      background:#061018; 
-      border:1px solid #17303a;
+    #sidebar a {
+      display: block; 
+      color: #e6eef0; 
+      text-decoration: none; 
+      padding: 14px 16px; 
+      margin-bottom: 12px; 
+      border-radius: 10px; 
+      background: #061018; 
+      border: 1px solid #17303a;
       transition: all 0.2s;
+      font-size: 16px;
     }
     
-    .sidebar a:hover {
+    #sidebar a:hover {
       background: #17303a;
       border-color: var(--teal);
       transform: translateX(5px);
     }
     
-    .sidebar hr {
-      border:none;
-      border-top:1px solid #17303a;
-      margin:16px 0;
+    #sidebar hr {
+      border: none;
+      border-top: 2px solid #17303a;
+      margin: 20px 0;
     }
     
-    .sidebar small {
-      color:#94a3b8;
+    #sidebar small {
+      color: #94a3b8;
       display: block;
       text-align: center;
+      font-size: 13px;
     }
     
-    /* Overlay for when sidebar is open */
-    .sidebar-overlay {
+    /* Overlay - FIXED */
+    #sidebarOverlay {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
       background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(3px);
-      z-index: 25;
+      backdrop-filter: blur(4px);
+      z-index: 999;
       display: none;
-      opacity: 0;
-      transition: opacity 0.2s ease;
     }
     
-    .sidebar-overlay.active {
+    #sidebarOverlay.active {
       display: block;
-      opacity: 1;
     }
     
-    footer{ text-align:center; padding:20px; color:#6b7280; border-top:1px solid #17303a; margin-top:30px; position:relative; z-index:5; }
+    /* Rest of your existing styles */
+    main { 
+      max-width: 760px; 
+      margin: 30px auto; 
+      padding: 20px; 
+      position: relative; 
+      z-index: 5; 
+    }
     
-    @media (max-width:640px){ 
-      main{ margin:24px 16px; } 
-      .sidebar{ width:84%; } 
+    .warning { 
+      background: #7c2d12; 
+      color: #ffedd5; 
+      padding: 15px; 
+      border-radius: 12px; 
+      margin-bottom: 20px; 
+      border: 1px solid #ea580c; 
+    }
+    
+    .progress-box { 
+      background: rgba(11, 18, 32, 0.8); 
+      backdrop-filter: blur(5px);
+      padding: 20px; 
+      border-radius: 16px; 
+      border: 1px solid #17303a; 
+      margin-bottom: 20px; 
+    }
+    
+    .form { 
+      background: rgba(11, 18, 32, 0.8); 
+      backdrop-filter: blur(5px);
+      padding: 20px; 
+      border-radius: 16px; 
+      border: 1px solid #17303a; 
+    }
+    
+    input { 
+      width: 100%; 
+      padding: 12px; 
+      border-radius: 8px; 
+      border: 1px solid #17303a; 
+      background: #061018; 
+      color: #fff; 
+      margin-top: 6px; 
+      font-size: 16px;
+    }
+    
+    button:not(#hamburgerBtn):not(#closeSidebarBtn) { 
+      width: 100%; 
+      padding: 14px; 
+      border-radius: 10px; 
+      background: var(--teal); 
+      color: #042027; 
+      border: none; 
+      font-weight: 700; 
+      margin-top: 12px; 
+      cursor: pointer;
+      font-size: 16px;
+    }
+    
+    .btn { 
+      display: inline-block; 
+      padding: 12px 20px; 
+      border-radius: 10px; 
+      background: #25d366; 
+      color: #fff; 
+      text-decoration: none; 
+      font-weight: 600; 
+    }
+    
+    footer { 
+      text-align: center; 
+      padding: 20px; 
+      color: #6b7280; 
+      border-top: 1px solid #17303a; 
+      margin-top: 30px; 
+      position: relative; 
+      z-index: 5; 
+    }
+    
+    @media (max-width:640px) { 
+      main { margin: 20px 16px; } 
+      #sidebar { width: 85%; } 
     }
   </style>
 </head>
@@ -187,9 +294,9 @@
 
   <header>
     <div class="left-controls">
-      <!-- Three lines hamburger menu to open sidebar -->
+      <!-- THREE LINES HAMBURGER MENU - FIXED -->
       <button id="hamburgerBtn" class="hamburger" aria-label="Open menu">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 6h18M3 12h18M3 18h18"/>
         </svg>
       </button>
@@ -203,7 +310,7 @@
     <div class="sidebar-header">
       <h3>Menu</h3>
       <button id="closeSidebarBtn" class="close-btn" aria-label="Close menu">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M18 6L6 18M6 6l12 12"/>
         </svg>
       </button>
@@ -222,37 +329,37 @@
 
     <section class="progress-box">
       <h2>📊 Live Progress Tracker</h2>
-      <div style="display:flex; gap:12px; margin-top:12px;">
-        <div style="flex:1; background:#061018; padding:12px; border-radius:8px; border:1px solid #17303a;">
-          <div style="color:#94a3b8; font-size:12px;">Collected</div>
-          <div style="font-size:24px; color:#13e6c9; font-weight:700;" id="collected"><%= collected %></div>
+      <div class="stats-container" style="display:flex; gap:15px; margin-top:15px;">
+        <div class="stat-card" style="flex:1; background:#061018; padding:15px; border-radius:12px; border:1px solid #17303a;">
+          <div style="color:#94a3b8; font-size:14px;">Collected</div>
+          <div style="font-size:32px; color:#13e6c9; font-weight:700;" id="collected"><%= collected %></div>
         </div>
-        <div style="flex:1; background:#061018; padding:12px; border-radius:8px; border:1px solid #17303a;">
-          <div style="color:#94a3b8; font-size:12px;">Remaining</div>
-          <div style="font-size:24px; color:#13e6c9; font-weight:700;" id="remaining"><%= remaining %></div>
+        <div class="stat-card" style="flex:1; background:#061018; padding:15px; border-radius:12px; border:1px solid #17303a;">
+          <div style="color:#94a3b8; font-size:14px;">Remaining</div>
+          <div style="font-size:32px; color:#13e6c9; font-weight:700;" id="remaining"><%= remaining %></div>
         </div>
       </div>
-      <div style="text-align:center; margin-top:12px; font-size:28px; color:#4ade80;" id="percent"><%= percent %>%</div>
+      <div style="text-align:center; margin-top:15px; font-size:32px; color:#4ade80;" id="percent"><%= percent %>%</div>
     </section>
 
     <section class="form">
-      <h3>📝 Submit Your Contact</h3>
+      <h3 style="color: var(--teal); margin-top: 0;">📝 Submit Your Contact</h3>
       <form id="contactForm">
         <div>
-          <label>Full Name</label>
+          <label style="color: #94a3b8;">Full Name</label>
           <input type="text" id="full_name" name="full_name" placeholder="Enter your full name" required />
         </div>
-        <div style="margin-top:12px;">
-          <label>Phone Number</label>
+        <div style="margin-top:15px;">
+          <label style="color: #94a3b8;">Phone Number</label>
           <input type="tel" id="phone" name="phone" placeholder="+1234567890" required />
-          <small style="color:#94a3b8;">Use international format (e.g., +1234567890)</small>
+          <small style="color:#94a3b8; display:block; margin-top:5px;">Use international format (e.g., +1234567890)</small>
         </div>
         <button type="submit" id="submitBtn">Submit Contact</button>
-        <div id="message"></div>
+        <div id="message" style="margin-top: 10px; padding: 10px; border-radius: 8px;"></div>
       </form>
     </section>
 
-    <section style="text-align:center; margin-top:18px;">
+    <section style="text-align:center; margin-top:20px;">
       <a class="btn" href="<%= whatsappLink %>" target="_blank" rel="noreferrer">💬 Join WhatsApp Group</a>
     </section>
   </main>
@@ -262,97 +369,82 @@
   </footer>
 
   <script>
-    // Wait for DOM to be fully loaded
+    // FIXED: Sidebar JavaScript - Wait for DOM to load
     document.addEventListener('DOMContentLoaded', function() {
-      // Sidebar elements
+      console.log('DOM loaded - initializing sidebar');
+      
+      // Get elements
       const sidebar = document.getElementById('sidebar');
       const hamburgerBtn = document.getElementById('hamburgerBtn');
       const closeBtn = document.getElementById('closeSidebarBtn');
       const overlay = document.getElementById('sidebarOverlay');
       
-      console.log('Sidebar elements loaded:', { sidebar, hamburgerBtn, closeBtn, overlay });
+      console.log('Elements found:', { 
+        sidebar: !!sidebar, 
+        hamburgerBtn: !!hamburgerBtn, 
+        closeBtn: !!closeBtn, 
+        overlay: !!overlay 
+      });
+      
+      // Check if elements exist
+      if (!sidebar || !hamburgerBtn || !closeBtn || !overlay) {
+        console.error('Sidebar elements not found!');
+        return;
+      }
       
       // Function to open sidebar
       function openSidebar() {
         console.log('Opening sidebar');
-        if (sidebar) {
-          sidebar.classList.add('open');
-          sidebar.setAttribute('aria-hidden', 'false');
-        }
-        if (overlay) {
-          overlay.classList.add('active');
-        }
-        // Prevent body scrolling when sidebar is open
-        document.body.style.overflow = 'hidden';
+        sidebar.classList.add('open');
+        overlay.classList.add('active');
+        sidebar.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling
       }
       
       // Function to close sidebar
       function closeSidebar() {
         console.log('Closing sidebar');
-        if (sidebar) {
-          sidebar.classList.remove('open');
-          sidebar.setAttribute('aria-hidden', 'true');
-        }
-        if (overlay) {
-          overlay.classList.remove('active');
-        }
-        // Restore body scrolling
-        document.body.style.overflow = '';
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+        sidebar.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = ''; // Restore scrolling
       }
       
-      // Toggle sidebar with hamburger button (three lines)
-      if (hamburgerBtn) {
-        hamburgerBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log('Hamburger clicked');
-          openSidebar();
-        });
-      } else {
-        console.error('Hamburger button not found!');
-      }
+      // Add click event to hamburger button
+      hamburgerBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Hamburger button clicked');
+        openSidebar();
+      });
       
-      // Close sidebar with close button (X)
-      if (closeBtn) {
-        closeBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log('Close button clicked');
-          closeSidebar();
-        });
-      }
+      // Add click event to close button
+      closeBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Close button clicked');
+        closeSidebar();
+      });
       
-      // Close sidebar when clicking overlay
-      if (overlay) {
-        overlay.addEventListener('click', function(e) {
-          e.preventDefault();
-          console.log('Overlay clicked');
-          closeSidebar();
-        });
-      }
+      // Add click event to overlay
+      overlay.addEventListener('click', function(e) {
+        e.preventDefault();
+        console.log('Overlay clicked');
+        closeSidebar();
+      });
       
-      // Close sidebar with Escape key
+      // Close on Escape key
       document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && sidebar && sidebar.classList.contains('open')) {
+        if (e.key === 'Escape' && sidebar.classList.contains('open')) {
           console.log('Escape key pressed');
           closeSidebar();
         }
       });
       
-      // Try to play video (some browsers block autoplay unless muted)
-      const bgVideo = document.getElementById('bgVideo');
-      if (bgVideo) {
-        const playPromise = bgVideo.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(() => {
-            // Autoplay blocked — user will need to interact with page
-            console.log('Video autoplay blocked');
-          });
-        }
-      }
+      console.log('Sidebar initialized successfully');
     });
 
-    // Contact submission function
+    // Rest of your existing JavaScript
     async function fetchCount() {
       try {
         const res = await fetch('/api/count');
@@ -362,10 +454,11 @@
           document.getElementById('remaining').textContent = data.remaining;
           document.getElementById('percent').textContent = data.percent + '%';
         }
-      } catch (err) { console.error('Fetch count error:', err); }
+      } catch (err) { 
+        console.error('Fetch count error:', err); 
+      }
     }
 
-    // Contact form submission
     document.getElementById('contactForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const full_name = document.getElementById('full_name').value.trim();
@@ -376,6 +469,7 @@
       submitBtn.disabled = true;
       submitBtn.textContent = 'Submitting...';
       messageDiv.textContent = '';
+      messageDiv.className = '';
 
       try {
         const res = await fetch('/api/contacts', {
@@ -385,24 +479,38 @@
         });
 
         if (res.ok) {
-          messageDiv.className = 'message success';
+          messageDiv.style.background = '#064e3b';
+          messageDiv.style.color = '#c7f4e9';
+          messageDiv.style.border = '1px solid #10b981';
           messageDiv.textContent = '✅ Contact submitted! Thank you!';
           document.getElementById('full_name').value = '';
           document.getElementById('phone').value = '';
           fetchCount();
         } else {
           const json = await res.json();
-          messageDiv.className = 'message error';
+          messageDiv.style.background = '#7f1d1d';
+          messageDiv.style.color = '#ffb4b4';
+          messageDiv.style.border = '1px solid #ef4444';
           messageDiv.textContent = '❌ ' + (json?.message || 'Failed to submit');
         }
       } catch (err) {
-        messageDiv.className = 'message error';
+        messageDiv.style.background = '#7f1d1d';
+        messageDiv.style.color = '#ffb4b4';
+        messageDiv.style.border = '1px solid #ef4444';
         messageDiv.textContent = '❌ Network error';
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit Contact';
       }
     });
+
+    // Try to play video
+    const bgVideo = document.getElementById('bgVideo');
+    if (bgVideo) {
+      bgVideo.play().catch(() => {
+        console.log('Video autoplay blocked');
+      });
+    }
 
     // Initial fetch and polling
     fetchCount();
