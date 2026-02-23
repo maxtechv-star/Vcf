@@ -711,7 +711,7 @@
     // Load contacts function
     async function loadContacts() {
       try {
-        const res = await fetch('/api/admin/Contacts-list');
+        const res = await fetch('/api/admin/contacts-list');
         if (res.status === 401) {
           window.location.href = '/admin-login';
           return;
