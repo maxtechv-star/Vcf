@@ -1088,7 +1088,10 @@
         const data = await response.json();
         
         if (response.ok) {
-          showMessage(messageDiv, '✅ Thank you! Your contact has been submitted successfully.', 'success');
+
+         const firstName = fullName.split(' ')[0];
+         
+          showMessage(messageDiv, `✅ Thank you ${firstName}! Your contact has been submitted successfully.`, 'success');
           document.getElementById('full_name').value = '';
           document.getElementById('phone').value = '';
           fetchStats();
